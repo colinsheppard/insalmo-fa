@@ -1,0 +1,13 @@
+Species.Setup file for inSALMO-FA application to Clear Creek fall Chinook. SFR 8/5/2013.
+For each species, provide species class name, parameter file name,
+initial population file name, and raster display color.
+
+FallChinook
+ClearCreekFallChinookFA.Params
+ClearCreekSpawnerInitFile.csv
+salmon
+
+OMykiss
+ClearCreekOMykissFA.Params
+ClearCreekOMykissSpawnerInitFile.csv
+SteelBlue
