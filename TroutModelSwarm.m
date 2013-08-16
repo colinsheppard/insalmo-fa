@@ -163,13 +163,19 @@ char **speciesColor;
   [sizeSymbolList addLast: Size8Plus];
 
   //
-  // Life stages for salmon.
+  // Life stages for salmon and/or FacAnadTrout
   // 
   lifestageSymbolList = [List create: modelZone];
 
   Juvenile     = [Symbol create: modelZone setName: "Juvenile"];
   [lifestageSymbolList addLast: Juvenile];
   Adult     = [Symbol create: modelZone setName: "Adult"];
+  [lifestageSymbolList addLast: Adult];
+  Adult     = [Symbol create: modelZone setName: "Presmolt"];
+  [lifestageSymbolList addLast: Adult];
+  Adult     = [Symbol create: modelZone setName: "Smolt"];
+  [lifestageSymbolList addLast: Adult];
+  Adult     = [Symbol create: modelZone setName: "Prespawn"];
   [lifestageSymbolList addLast: Adult];
 
   reachSymbolList = [List create: modelZone];
