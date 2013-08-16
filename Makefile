@@ -5,7 +5,7 @@ endif
 CFLAGS="-c -g -O -fgnu-runtime -fno-strict-aliasing -Wall -Wno-import -Wno-protocol -Wno-long-long  -D_GNU_SOURCE" 
 #EXTRACPPFLAGS+=-pg
 
-APPLICATION=insalmo
+APPLICATION=insalmo-fa
 OBJECTS=Trout.o \
 	HabitatSpace.o \
 	Redd.o \
@@ -23,6 +23,7 @@ OBJECTS=Trout.o \
         TroutBatchSwarm.o \
 \
         FallChinook.o \
+        OMykiss.o \
 \
         HabitatManager.o \
         HabitatSetup.o \
@@ -74,7 +75,7 @@ Redd.o: Redd.[hm] HabitatSpace.h globals.h DEBUGFLAGS.h
 SurvivalProb.o: SurvivalProb.[hm] globals.h DEBUGFLAGS.h
 HabitatSpace.o: HabitatSpace.[hm] globals.h DEBUGFLAGS.h
 FishParams.o: FishParams.[hm] DEBUGFLAGS.h
-TroutModelSwarm.o: TroutModelSwarm.[hm] globals.h FallChinook.h \
+TroutModelSwarm.o: TroutModelSwarm.[hm] globals.h FallChinook.h OMykiss.h \
 	HabitatSpace.h FishParams.h DEBUGFLAGS.h
 TroutObserverSwarm.o: TroutObserverSwarm.[hm] TroutModelSwarm.h  globals.h
 SearchElement.o: SearchElement.[hm]
@@ -87,6 +88,7 @@ ExperBatchSwarm.o : ExperBatchSwarm.[hm]
 TroutBatchSwarm.o : TroutBatchSwarm.[hm]
 #
 FallChinook.o : FallChinook.[hm] DEBUGFLAGS.h
+OMykiss.o : OMykiss.[hm] DEBUGFLAGS.h
 #
 HabitatManager.o : HabitatManager.[hm]
 HabitatSetup.o : HabitatSetup.[hm]

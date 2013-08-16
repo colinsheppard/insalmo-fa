@@ -37,6 +37,7 @@ Boston, MA 02111-1307, USA.
 #import "globals.h"
 #import "Trout.h"
 #import "FallChinook.h"
+#import "OMykiss.h"
 #import "Redd.h"
 #import "HabitatSpace.h"
 #import "FishParams.h"
