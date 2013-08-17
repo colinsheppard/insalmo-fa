@@ -89,14 +89,14 @@ char **speciesColor;
 
   #endif
 
+  [self readSpeciesSetup];
+
   if(numberOfSpecies == 0)
   {
      fprintf(stderr, "ERROR: TroutModelSwarm >>>> instantiateObjects >>>> numberOfSpecies is zero\n"); 
      fflush(0);
      exit(1);
   }
-
-  [self readSpeciesSetup];
 
   //
   // Create list of species symbols
