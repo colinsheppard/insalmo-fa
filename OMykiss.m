@@ -29,6 +29,7 @@ Boston, MA 02111-1307, USA.
 
 #import "globals.h"
 #import "OMykiss.h"
+#import "MemoryElement.h"
 
 @implementation OMykiss
 
@@ -206,12 +207,51 @@ Boston, MA 02111-1307, USA.
 /////////////////////////////////////////////////////////////////////////////////////////
 //
 // selectLifeHistory
-// inSALMO-FA -- the fifth fish action  
+// inSALMO-FA -- the fifth fish action 
+//
+// This action includes updating growth & survival memory,
+// decision of juveniles of whether to become presmolts, and
+// decision by juveniles whether to become prespawners. 
 //
 ////////////////////////////////////////////////////////////////////////////////////////
 - selectLifeHistory
 {
-  return self;  // stub for now
+
+	double meanGrowth;   // over memory period
+	double meanSurvival; // over memory period
+	id <Averager> theAverager;
+
+	if(lifestageSymbol != [model getJuvenileLifestageSymbol])
+	{
+	 return self;  // Only juveniles use this method.
+	}
+	 
+	 // Update memory list with today's growth & survival
+	[memoryList addFirst: [MemoryElement createBegin: [model getModelZone]
+										withGrowth: netEnergyForBestCell/(fishParams->fishEnergyDensity)
+										andSurvival: nonStarvSurvival]];
+	
+	if([memoryList getCount] > (fishParams->fishMemoryListLength))
+	{
+		[memoryList removeLast];
+		if([memoryList getCount] != (fishParams->fishMemoryListLength))
+		{
+			fprintf(stderr, "ERROR: OMykiss >>>> selectLifeHistory >>>> Memory list length is: %d\n", 
+			[memoryList getCount]);
+			fflush(0);
+			exit(1);
+		}
+	}
+	
+	// Now update means over memory
+	theAverager = [model getMemoryAverager];
+	[theAverager setCollection: memoryList];
+	[theAverager setProbedSelector: M(getGrowthValue)];
+	meanGrowth = [theAverager getAverage];
+	[theAverager setProbedSelector: M(getSurvivalValue)];
+	meanSurvival = [theAverager getAverage];
+	
+	return self;
 }
 
 

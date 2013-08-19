@@ -177,6 +177,11 @@ char **speciesColor;
   [lifestageSymbolList addLast: Smolt];
   Prespawn     = [Symbol create: modelZone setName: "Prespawn"]; // inSALMO-FA
   [lifestageSymbolList addLast: Prespawn];
+  
+  //
+  // Averager used by FacAnadTrout to calculate memory variables
+  //
+  memoryAverager = [Averager create: modelZone]; // inSALMO-FA
 
   reachSymbolList = [List create: modelZone];
 
@@ -2648,6 +2653,17 @@ char **speciesColor;
 - (id <Symbol>) getPrespawnLifestageSymbol
 {
    return Prespawn;
+}
+
+///////////////////////////////////
+//
+// getMemoryAverager
+//
+// inSALMO-FA
+///////////////////////////////////
+- (id <Averager>) getMemoryAverager
+{
+   return memoryAverager;
 }
 
 

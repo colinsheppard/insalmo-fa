@@ -29,6 +29,7 @@ Boston, MA 02111-1307, USA.
 
 #include <time.h>
 #include <objectbase.h>
+#include <analysis.h>
 
 @protocol TroutModelSwarm
 
@@ -76,6 +77,8 @@ Boston, MA 02111-1307, USA.
 - (id <Symbol>) getPresmoltLifestageSymbol;  // inSALMO-FA
 - (id <Symbol>) getSmoltLifestageSymbol;  // inSALMO-FA
 - (id <Symbol>) getPrespawnLifestageSymbol;  // inSALMO-FA
+
+- (id <Averager>) getMemoryAverager;   // inSALMO-FA
 
 - (id <Symbol>) getSizeSymbolForLength: (double) aLength;
 - (id <List>) getSizeSymbolList;

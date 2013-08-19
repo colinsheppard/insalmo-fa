@@ -29,6 +29,7 @@ Boston, MA 02111-1307, USA.
 #import <stdlib.h>
 #import <objectbase/Swarm.h>
 #import <random.h>
+#import <analysis.h>
 
 #import "EcoAverager.h"
 
@@ -288,6 +289,8 @@ double lftBigOutmigrantsSizeThreshold; // Size defining "big" outmigrants
   id <Symbol> Presmolt; // inSALMO-FA
   id <Symbol> Smolt; // inSALMO-FA
   id <Symbol> Prespawn; // inSALMO-FA
+  
+  id <Averager> memoryAverager; // inSALMO-FA
 
   id <List> sizeSymbolList;
   id <Symbol> Size0to5;
@@ -394,6 +397,8 @@ double lftBigOutmigrantsSizeThreshold; // Size defining "big" outmigrants
 - (id <Symbol>) getPresmoltLifestageSymbol;  // inSALMO-FA
 - (id <Symbol>) getSmoltLifestageSymbol;  // inSALMO-FA
 - (id <Symbol>) getPrespawnLifestageSymbol;  // inSALMO-FA
+
+- (id <Averager>) getMemoryAverager;   // inSALMO-FA
 
 
 #if (DEBUG_LEVEL > 0)
