@@ -322,6 +322,7 @@ id toggledFishForHabSurvUpdate;
 - move;
 - grow;
 - die;
+- selectLifeHistory; // inSALMO-FA
 
 - killFish;
 - outmigrateFrom: (FishCell *) bestDest;

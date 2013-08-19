@@ -1109,6 +1109,7 @@ char **speciesColor;
   [fishActions createActionForEach: liveFish message: M(move)];
   [fishActions createActionForEach: liveFish message: M(grow)];
   [fishActions createActionForEach: liveFish message: M(die)];
+  [fishActions createActionForEach: liveFish message: M(selectLifeHistory)];  // inSALMO-FA
 
   //
   // Redd Actions

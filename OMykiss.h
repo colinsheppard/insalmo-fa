@@ -36,6 +36,7 @@ Boston, MA 02111-1307, USA.
 - (void) drop;
 
 - move;
+- selectLifeHistory;
 
 @end
 
