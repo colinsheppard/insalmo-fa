@@ -1785,6 +1785,7 @@ Boston, MA 02111-1307, USA.
 //
 // move is the second action taken by fish in their daily routine 
 //
+// inSALMO-FA: OMykiss class has its own version of this method
 //////////////////////////////////////////////////////////////////////
 - move 
 {

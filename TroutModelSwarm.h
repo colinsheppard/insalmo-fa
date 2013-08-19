@@ -285,6 +285,9 @@ double lftBigOutmigrantsSizeThreshold; // Size defining "big" outmigrants
   id <List> lifestageSymbolList;
   id <Symbol> Juvenile;
   id <Symbol> Adult;
+  id <Symbol> Presmolt; // inSALMO-FA
+  id <Symbol> Smolt; // inSALMO-FA
+  id <Symbol> Prespawn; // inSALMO-FA
 
   id <List> sizeSymbolList;
   id <Symbol> Size0to5;
@@ -388,6 +391,9 @@ double lftBigOutmigrantsSizeThreshold; // Size defining "big" outmigrants
 - (id <List>) getLifestageSymbolList;
 - (id <Symbol>) getAdultLifestageSymbol;
 - (id <Symbol>) getJuvenileLifestageSymbol;
+- (id <Symbol>) getPresmoltLifestageSymbol;  // inSALMO-FA
+- (id <Symbol>) getSmoltLifestageSymbol;  // inSALMO-FA
+- (id <Symbol>) getPrespawnLifestageSymbol;  // inSALMO-FA
 
 
 #if (DEBUG_LEVEL > 0)

@@ -75,7 +75,98 @@ Boston, MA 02111-1307, USA.
      [super drop];
 }
 
+//////////////////////////////////////////////////////////////////////
+//
+// Move 
+//
+// move is the second action taken by fish in their daily routine 
+//
+// inSALMO-FA: OMykiss class has its own version of this method
+//////////////////////////////////////////////////////////////////////
+- move 
+{
+       //fprintf(stdout, "Trout >>>> move >>>> BEGIN\n");
+       //fflush(0);
+   //
+   // calcMaxMoveDistance sets the ivar
+   // maxMoveDistance.
+   //
+   [self calcMaxMoveDistance];
+
+   if(isSpawner == YES)
+   {
+
+     if(spawnedThisSeason == YES)
+     {
+       //
+       // Spawners do not move once they have spawned, to guard their redd.
+       // The non-moving spawners still do grow and die, so they need all the
+       // variables set in moving to a cell
+       //
+
+       [self moveToBestDest: myCell];
+
+       //fprintf(stdout, "Trout >>>> move >>>> depthLengthRatioForCell = %f\n",depthLengthRatioForCell);
+     } // if spawned this seasons
+
+     else
+     {
+       //
+       // Spawners who have not yet spawned move, but to minimize risk and cannot
+       // move out of their reach. Methods to calculate drift and search intake
+       // return zero if "isSpawner" is YES.
+       //
+       [self moveInReachToMaximizeSurvival];
+     } // else - spawner who did not spawn yet
+   }   // if isSpawner
+
+   else  // isSpawner != YES
+   {
+
+     if(spawnedThisSeason != NO)
+     {
+      fprintf(stderr, "ERROR: OMykiss >>>> Move >>>> isSpawner = NO and spawnedThisSeason != NO\n");
+      fflush(0);
+      exit(1);
+     }
+
+	 if(lifestageSymbol == [model getJuvenileLifestageSymbol])
+     {
+         [self moveToMaximizeExpectedMaturity];
+     }
+
+     else  // "else"s are necessary to keep a fish from moving twice if they change life stage
+	 if(lifestageSymbol == [model getPresmoltLifestageSymbol])
+     {
+         [self moveAsPresmolt];
+     }
+
+	else
+	if(lifestageSymbol == [model getSmoltLifestageSymbol])
+     {
+         [self moveAsSmolt];
+     }
+
+	 else
+	if(lifestageSymbol == [model getPrespawnLifestageSymbol])
+     {
+         [self moveAsPrespawner];
+     }
+
+	 else
+     {
+      fprintf(stderr, "ERROR: OMykiss >>>> Move >>>> Fish with illegal lifestage: %s\n", 
+		[lifestageSymbol getName]);
+      fflush(0);
+      exit(1);
+     }
+
+    }  // else isSpawner != YES
+
+   return self;
+
+}
+
+
 
 @end
-
-

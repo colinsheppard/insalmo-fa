@@ -171,12 +171,12 @@ char **speciesColor;
   [lifestageSymbolList addLast: Juvenile];
   Adult     = [Symbol create: modelZone setName: "Adult"];
   [lifestageSymbolList addLast: Adult];
-  Adult     = [Symbol create: modelZone setName: "Presmolt"];
-  [lifestageSymbolList addLast: Adult];
-  Adult     = [Symbol create: modelZone setName: "Smolt"];
-  [lifestageSymbolList addLast: Adult];
-  Adult     = [Symbol create: modelZone setName: "Prespawn"];
-  [lifestageSymbolList addLast: Adult];
+  Presmolt     = [Symbol create: modelZone setName: "Presmolt"]; // inSALMO-FA
+  [lifestageSymbolList addLast: Presmolt];
+  Smolt     = [Symbol create: modelZone setName: "Smolt"]; // inSALMO-FA
+  [lifestageSymbolList addLast: Smolt];
+  Prespawn     = [Symbol create: modelZone setName: "Prespawn"]; // inSALMO-FA
+  [lifestageSymbolList addLast: Prespawn];
 
   reachSymbolList = [List create: modelZone];
 
@@ -2616,6 +2616,39 @@ char **speciesColor;
    return Juvenile;
 }
 
+///////////////////////////////////
+//
+// getPresmoltLifestageSymbol
+//
+// inSALMO-FA
+///////////////////////////////////
+- (id <Symbol>) getPresmoltLifestageSymbol
+{
+   return Presmolt;
+}
+
+///////////////////////////////////
+//
+// getSmoltLifestageSymbol
+//
+// inSALMO-FA
+///////////////////////////////////
+- (id <Symbol>) getSmoltLifestageSymbol
+{
+   return Smolt;
+}
+
+///////////////////////////////////
+//
+// getPrespawnLifestageSymbol
+//
+// inSALMO-FA
+///////////////////////////////////
+- (id <Symbol>) getPrespawnLifestageSymbol
+{
+   return Prespawn;
+}
+
 
 
 ///////////////////////////////////////
@@ -3518,9 +3551,9 @@ char **speciesColor;
    //int liveFishCount = 0;
    //int deadFishCount = 0;
 
-   int numberOfRT = 0;
+   //int numberOfRT = 0;
    int numberOfBT = 0;
-   int totalZoneFishCount = 0;
+   //int totalZoneFishCount = 0;
    //int objCount = 0;
 
    FILE* zout = NULL;
@@ -3598,7 +3631,7 @@ char **speciesColor;
     }
     [ndx drop];
 
-    totalZoneFishCount = numberOfRT + numberOfBT;
+    //totalZoneFishCount = numberOfRT + numberOfBT;
 
     {
          //char* zBuf[300];
