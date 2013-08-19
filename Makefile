@@ -62,10 +62,11 @@ OBJECTS=Trout.o \
 	PolyInputData.o \
 	PolyCell.o \
 	PolyPoint.o \
-	FishCell.o
+	FishCell.o \
+\
+	MemoryElement.o
 
-
-OTHERCLEAN= instream-2d.exe.core instream-2d.exe unhappiness.output
+OTHERCLEAN= insalmo-fa.exe.core insalmo-fa.exe unhappiness.output
 
 include $(SWARMHOME)/etc/swarm/Makefile.appl
 
@@ -132,3 +133,5 @@ PolyInputData.o : PolyInputData.[hm]
 PolyCell.o : PolyCell.[hm]
 PolyPoint.o : PolyCell.[hm]
 FishCell.o : FishCell.[hm]
+#
+MemoryElement.o : MemoryElement.[hm]

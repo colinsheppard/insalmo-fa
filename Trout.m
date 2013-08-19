@@ -245,6 +245,8 @@ Boston, MA 02111-1307, USA.
 
   destCellList = [List create: troutZone];
 
+  memoryList = [List create: troutZone]; // inSALMO-FA List of MemoryElement objects: daily growth & survival
+
   return self;
 }
 
@@ -4027,7 +4029,10 @@ Boston, MA 02111-1307, USA.
      [dieDist drop];
 
      [destCellList drop];
-     destCellList = nil; 
+      destCellList = nil; 
+
+     [memoryList drop];  //inSALMO-FA
+      memoryList = nil; 
 
      if(deathCausedBy != NULL){
          [troutZone free: deathCausedBy];
@@ -4035,7 +4040,7 @@ Boston, MA 02111-1307, USA.
      }
 
      [troutZone drop];
-     troutZone = nil;
+      troutZone = nil;
 
      [super drop];
      self = nil;

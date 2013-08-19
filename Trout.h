@@ -55,6 +55,8 @@ Boston, MA 02111-1307, USA.
   id <List> potentialReddCells;
   id <List> tagDestCellList;
 
+  id <List> memoryList;  // inSALMO-FA List of MemoryElement objects: daily growth & survival
+
   int speciesNdx;
 
   int   age;
