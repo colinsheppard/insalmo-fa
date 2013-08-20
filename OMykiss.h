@@ -41,5 +41,14 @@ Boston, MA 02111-1307, USA.
 - moveAsPrespawner;
 - selectLifeHistory;
 
+- (double) anadromyFitnessWithGrowth: (double) aGrowth
+						andSurvival: (double) aSurvival
+						andTimeHorizon: (int) someDays;
+
+- (double) residenceFitnessWithGrowth: (double) aGrowth
+						andSurvival: (double) aSurvival
+						andTimeHorizon: (int) someDays;
+
+
 @end
 

@@ -3546,6 +3546,16 @@ char **speciesColor;
       }
 
  //    [self outputModelZone: modelZone];
+ 
+     if(memoryGrowthAverager != nil){  // inSALMO-FA
+          [memoryGrowthAverager drop];
+          memoryGrowthAverager = nil;
+     }
+
+     if(memorySurvivalAverager != nil){  // inSALMO-FA
+          [memorySurvivalAverager drop];
+          memorySurvivalAverager = nil;
+     }
 
      [modelZone drop];
      modelZone = nil;

@@ -222,6 +222,9 @@ Boston, MA 02111-1307, USA.
 	id aMemory;          // Did not work to declare as <MemoryElement>
 	id <Averager> theGrowthAverager; // Did not work to use one averager for growth & survival
 	id <Averager> theSurvivalAverager; // Did not work to use one averager for growth & survival
+	double anadromyFitness;
+	double residenceFitness;
+	int residenceTimeHorizon;
 
 	if(lifestageSymbol != [model getJuvenileLifestageSymbol])
 	{
@@ -231,14 +234,14 @@ Boston, MA 02111-1307, USA.
 	// fprintf(stdout, "OMykiss >>>> selectLifeHistory >>>> Before create memory\n");
 	// fflush(0);
 
-	 // Update memory list with today's growth & survival
-	 aMemory = [MemoryElement createBegin: [model getModelZone]
+	// Update memory list with today's growth & survival
+	aMemory = [MemoryElement createBegin: [model getModelZone]
 			withGrowth: netEnergyForBestCell/(fishParams->fishEnergyDensity)
 			andSurvival: nonStarvSurvival];
 	aMemory = [aMemory createEnd];
 
-	fprintf(stdout, "OMykiss >>>> After new memory; today's growth: %f, today's survival: %f\n", 
-	[aMemory getGrowthValue], [aMemory getSurvivalValue]);
+	// fprintf(stdout, "OMykiss >>>> After new memory; today's growth: %f, today's survival: %f\n", 
+	// [aMemory getGrowthValue], [aMemory getSurvivalValue]);
 	
 	// fprintf(stdout, "OMykiss >>>> selectLifeHistory >>>> Before add memory\n");
 	// fflush(0);
@@ -260,6 +263,19 @@ Boston, MA 02111-1307, USA.
 			// fprintf(stdout, "OMykiss >>>> selectLifeHistory >>>> Memory list length is: %d\n", 
 			// [memoryList getCount]);
 			// fflush(0);
+	
+	// Juveniles do not make life history decisions until their age in days
+	// exceeds the parameter fishMemoryListLength
+	if([memoryList getCount] < (fishParams->fishMemoryListLength))
+	{
+		return self;
+	}
+	// Juveniles do not make life history decisions after their age in years
+	// exceeds 2
+	if(age >= 2)
+	{
+		return self;
+	}
 	
 	// Now update means over memory
 	// First create the averagers if they doesn't exist.
@@ -286,20 +302,63 @@ Boston, MA 02111-1307, USA.
 	// fprintf(stdout, "OMykiss >>>> selectLifeHistory >>>> Before Averager set collection\n");
 	// fflush(0);
 
+	// Update averagers and get means.
 	[theGrowthAverager setCollection: memoryList];
-	//[theGrowthAverager setProbedSelector: M(getGrowthValue)];
 	[theGrowthAverager update];
 	meanGrowth = [theGrowthAverager getAverage];
 	[theSurvivalAverager setCollection: memoryList];
-	//[theSurvivalAverager setProbedSelector: M(getSurvivalValue)];
 	[theSurvivalAverager update];
 	meanSurvival = [theSurvivalAverager getAverage];
 
-	fprintf(stdout, "OMykiss >>>> After update; Memory length: %d, meanGrowth: %f, meanSurvival: %f\n", 
-	[memoryList getCount], meanGrowth, meanSurvival);
+	// fprintf(stdout, "OMykiss >>>> After update; Memory length: %d, meanGrowth: %f, meanSurvival: %f\n", 
+	// [memoryList getCount], meanGrowth, meanSurvival);
+
+	//
+	// Juvenile decides to become presmolt if its anadromy fitness
+	// exceeds residence fitness
+	//
+	// First, calculate residence time horizon
+	//
+	residenceTimeHorizon = 100;  // stub for now
 	
+	anadromyFitness = [self anadromyFitnessWithGrowth: meanGrowth
+						andSurvival: meanSurvival
+						andTimeHorizon: fishParams->fishSmoltDelay];
+
+	residenceFitness = [self residenceFitnessWithGrowth: meanGrowth
+						andSurvival: meanSurvival
+						andTimeHorizon: residenceTimeHorizon];
+	
+	if(anadromyFitness > residenceFitness)
+	{
+		lifestageSymbol = [model getPresmoltLifestageSymbol];
+	}
+
 	return self;
 }
 
+///////////////////////////////////////////////////////////////////////
+//
+// anadromyFitnessWithGrowth:
+//
+///////////////////////////////////////////////////////////////////////
+- (double) anadromyFitnessWithGrowth: (double) aGrowth
+						andSurvival: (double) aSurvival
+						andTimeHorizon: (int) someDays
+{
+	return pow(aSurvival,someDays); // Stub for now
+}
+
+///////////////////////////////////////////////////////////////////////
+//
+// residenceFitnessWithGrowth:
+//
+///////////////////////////////////////////////////////////////////////
+- (double) residenceFitnessWithGrowth: (double) aGrowth
+						andSurvival: (double) aSurvival
+						andTimeHorizon: (int) someDays
+{
+	return pow(aSurvival,someDays); // Stub for now
+}
 
 @end
