@@ -49,6 +49,7 @@ Boston, MA 02111-1307, USA.
 #import "InterpolationTableP.h"
 #import "LogisticFunc.h"
 #import "YearShufflerP.h"
+#import "MemoryElement.h" // inSALMO-FA
 
 #import "DEBUGFLAGS.h"
 
@@ -290,7 +291,8 @@ double lftBigOutmigrantsSizeThreshold; // Size defining "big" outmigrants
   id <Symbol> Smolt; // inSALMO-FA
   id <Symbol> Prespawn; // inSALMO-FA
   
-  id <Averager> memoryAverager; // inSALMO-FA
+  id <Averager> memoryGrowthAverager; // inSALMO-FA
+  id <Averager> memorySurvivalAverager; // inSALMO-FA
 
   id <List> sizeSymbolList;
   id <Symbol> Size0to5;
@@ -398,7 +400,8 @@ double lftBigOutmigrantsSizeThreshold; // Size defining "big" outmigrants
 - (id <Symbol>) getSmoltLifestageSymbol;  // inSALMO-FA
 - (id <Symbol>) getPrespawnLifestageSymbol;  // inSALMO-FA
 
-- (id <Averager>) getMemoryAverager;   // inSALMO-FA
+- (id <Averager>) getMemoryGrowthAverager;   // inSALMO-FA
+- (id <Averager>) getMemorySurvivalAverager;   // inSALMO-FA
 
 
 #if (DEBUG_LEVEL > 0)

@@ -32,6 +32,7 @@ Boston, MA 02111-1307, USA.
 #import <random.h>
 #import "FishParams.h"
 #import "TroutModelSwarm.h"
+#import "MemoryElement.h"  // inSALMO-FA
 
 /*
 @protocol Observer 
@@ -63,6 +64,9 @@ char **speciesColor;
   troutModelSwarm->fishColorMap = nil;
 
   troutModelSwarm->printFishParams = NO;
+  
+  troutModelSwarm->memoryGrowthAverager = nil; // inSALMO-FA
+  troutModelSwarm->memorySurvivalAverager = nil; // inSALMO-FA
 
 
   return troutModelSwarm;
@@ -178,11 +182,6 @@ char **speciesColor;
   Prespawn     = [Symbol create: modelZone setName: "Prespawn"]; // inSALMO-FA
   [lifestageSymbolList addLast: Prespawn];
   
-  //
-  // Averager used by FacAnadTrout to calculate memory variables
-  //
-  memoryAverager = [Averager create: modelZone]; // inSALMO-FA
-
   reachSymbolList = [List create: modelZone];
 
   fishCounter = 0;
@@ -2657,13 +2656,24 @@ char **speciesColor;
 
 ///////////////////////////////////
 //
-// getMemoryAverager
+// getMemoryGrowthAverager
 //
 // inSALMO-FA
 ///////////////////////////////////
-- (id <Averager>) getMemoryAverager
+- (id <Averager>) getMemoryGrowthAverager
 {
-   return memoryAverager;
+   return memoryGrowthAverager;
+}
+
+///////////////////////////////////
+//
+// getMemorySurvivalAverager
+//
+// inSALMO-FA
+///////////////////////////////////
+- (id <Averager>) getMemorySurvivalAverager
+{
+   return memorySurvivalAverager;
 }
 
 

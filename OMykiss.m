@@ -219,18 +219,32 @@ Boston, MA 02111-1307, USA.
 
 	double meanGrowth;   // over memory period
 	double meanSurvival; // over memory period
-	id <Averager> theAverager;
+	id aMemory;          // Did not work to declare as <MemoryElement>
+	id <Averager> theGrowthAverager; // Did not work to use one averager for growth & survival
+	id <Averager> theSurvivalAverager; // Did not work to use one averager for growth & survival
 
 	if(lifestageSymbol != [model getJuvenileLifestageSymbol])
 	{
 	 return self;  // Only juveniles use this method.
 	}
 	 
+	// fprintf(stdout, "OMykiss >>>> selectLifeHistory >>>> Before create memory\n");
+	// fflush(0);
+
 	 // Update memory list with today's growth & survival
-	[memoryList addFirst: [MemoryElement createBegin: [model getModelZone]
-										withGrowth: netEnergyForBestCell/(fishParams->fishEnergyDensity)
-										andSurvival: nonStarvSurvival]];
+	 aMemory = [MemoryElement createBegin: [model getModelZone]
+			withGrowth: netEnergyForBestCell/(fishParams->fishEnergyDensity)
+			andSurvival: nonStarvSurvival];
+	aMemory = [aMemory createEnd];
+
+	fprintf(stdout, "OMykiss >>>> After new memory; today's growth: %f, today's survival: %f\n", 
+	[aMemory getGrowthValue], [aMemory getSurvivalValue]);
 	
+	// fprintf(stdout, "OMykiss >>>> selectLifeHistory >>>> Before add memory\n");
+	// fflush(0);
+
+	[memoryList addFirst: aMemory];
+
 	if([memoryList getCount] > (fishParams->fishMemoryListLength))
 	{
 		[memoryList removeLast];
@@ -242,14 +256,47 @@ Boston, MA 02111-1307, USA.
 			exit(1);
 		}
 	}
+
+			// fprintf(stdout, "OMykiss >>>> selectLifeHistory >>>> Memory list length is: %d\n", 
+			// [memoryList getCount]);
+			// fflush(0);
 	
 	// Now update means over memory
-	theAverager = [model getMemoryAverager];
-	[theAverager setCollection: memoryList];
-	[theAverager setProbedSelector: M(getGrowthValue)];
-	meanGrowth = [theAverager getAverage];
-	[theAverager setProbedSelector: M(getSurvivalValue)];
-	meanSurvival = [theAverager getAverage];
+	// First create the averagers if they doesn't exist.
+	// (Does not work to use one averager for both selectors)
+
+	theGrowthAverager = [model getMemoryGrowthAverager];
+	if(theGrowthAverager == nil)
+	{
+		theGrowthAverager = [Averager createBegin: [model getModelZone]]; 
+		[theGrowthAverager setCollection: memoryList];
+		[theGrowthAverager setProbedSelector: M(getGrowthValue)];
+		theGrowthAverager = [theGrowthAverager createEnd];
+	}
+
+	theSurvivalAverager = [model getMemorySurvivalAverager];
+	if(theSurvivalAverager == nil)
+	{
+		theSurvivalAverager = [Averager createBegin: [model getModelZone]]; 
+		[theSurvivalAverager setCollection: memoryList];
+		[theSurvivalAverager setProbedSelector: M(getSurvivalValue)];
+		theSurvivalAverager = [theSurvivalAverager createEnd];
+	}
+	
+	// fprintf(stdout, "OMykiss >>>> selectLifeHistory >>>> Before Averager set collection\n");
+	// fflush(0);
+
+	[theGrowthAverager setCollection: memoryList];
+	//[theGrowthAverager setProbedSelector: M(getGrowthValue)];
+	[theGrowthAverager update];
+	meanGrowth = [theGrowthAverager getAverage];
+	[theSurvivalAverager setCollection: memoryList];
+	//[theSurvivalAverager setProbedSelector: M(getSurvivalValue)];
+	[theSurvivalAverager update];
+	meanSurvival = [theSurvivalAverager getAverage];
+
+	fprintf(stdout, "OMykiss >>>> After update; Memory length: %d, meanGrowth: %f, meanSurvival: %f\n", 
+	[memoryList getCount], meanGrowth, meanSurvival);
 	
 	return self;
 }
