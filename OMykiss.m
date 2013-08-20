@@ -225,7 +225,8 @@ Boston, MA 02111-1307, USA.
 	double anadromyFitness;
 	double residenceFitness;
 	int residenceTimeHorizon;
-
+	time_t now;
+	
 	if(lifestageSymbol != [model getJuvenileLifestageSymbol])
 	{
 	 return self;  // Only juveniles use this method.
@@ -319,7 +320,31 @@ Boston, MA 02111-1307, USA.
 	//
 	// First, calculate residence time horizon
 	//
-	residenceTimeHorizon = 100;  // stub for now
+	now = [self getCurrentTimeT];
+	
+	if(age == 0)
+	{
+		residenceTimeHorizon = 365 + [timeManager getNumberOfDaysBetween: now
+			and: [timeManager getTimeTForNextMMDD: fishParams->fishSpawnStartDate
+					givenThisTimeT: now]];
+	}
+	else   // this should only happen for age 1
+	{
+		if([timeManager isTimeT: now betweenMMDD: "1/1" 
+			andMMDD: fishParams->fishSpawnStartDate])
+		{
+			residenceTimeHorizon = 365 + [timeManager getNumberOfDaysBetween: now
+			and: [timeManager getTimeTForNextMMDD: fishParams->fishSpawnStartDate
+					givenThisTimeT: now]];
+		}
+		else
+		{
+			residenceTimeHorizon = [timeManager getNumberOfDaysBetween: now
+			and: [timeManager getTimeTForNextMMDD: fishParams->fishSpawnStartDate
+					givenThisTimeT: now]];
+		}
+		
+	}
 	
 	anadromyFitness = [self anadromyFitnessWithGrowth: meanGrowth
 						andSurvival: meanSurvival
@@ -429,7 +454,64 @@ Boston, MA 02111-1307, USA.
 						andSurvival: (double) aSurvival
 						andTimeHorizon: (int) someDays
 {
-	return pow(aSurvival,someDays); // Stub for now
+	double nonStarveSurvival;
+	double starvSurvival;
+	double expectedOffspring = 999;
+	
+	double newWeight;
+	double newLength;
+	double newCondition;
+	double dailyStarvSurvival;
+	double Kt, KT, a, b;
+
+	if(myCell == nil)
+	{
+		fprintf(stderr, "ERROR: OMykiss >>>> residenceFitnessWithGrowth >>>> fish cell is nil\n");
+		fflush(0);
+		exit(1);
+	}
+
+	
+	// First, calculate non-starvation survival over time horizon
+	nonStarveSurvival = pow(aSurvival,someDays);
+	
+	// Second, calculate starvation survival over time horizon
+	// This duplicates some stuff in methods called by expectedMaturityAt:
+	newWeight = fishWeight + (aGrowth * someDays);
+	if(newWeight < 0.0) {newWeight = 0.0;}
+	newLength = [self getLengthForNewWeight: newWeight];
+	newCondition = [self getConditionForWeight: newWeight andLength: newLength];
+	
+	if(fabs(fishCondition - newCondition) < 0.001) 
+	{
+		[myCell updateFishSurvivalProbFor: self];
+		dailyStarvSurvival = [myCell getStarvSurvivalFor: self];
+	}
+	else 
+	{
+		a = starvPa; 
+		b = starvPb; 
+		Kt = fishCondition;  //current fish condition
+		KT = newCondition;
+		dailyStarvSurvival =  (1/a)*(log((1+exp(a*KT+b))/(1+exp(a*Kt+b))))/(KT-Kt); 
+	}  
+
+	if(isnan(dailyStarvSurvival) || isinf(dailyStarvSurvival))
+	{
+		fprintf(stderr, "ERROR: OMykiss >>>> residenceFitnessWithGrowth >>>> dailyStarvSurvival = %f\n", dailyStarvSurvival);
+		fflush(0);
+		exit(1);
+	}
+
+	starvSurvival = pow(dailyStarvSurvival,someDays);
+	
+	// Third, calculate expected offspring from size
+	expectedOffspring = (fishParams->fishFecundParamA) *
+		pow(newLength,fishParams->fishFecundParamB);
+
+	fprintf(stdout, "OMykiss residenceFitnessWithGrowth timeHor: %d nonStarv: %f starv: %f offspring: %f\n", someDays, nonStarveSurvival, starvSurvival, expectedOffspring);
+	
+	return nonStarveSurvival * starvSurvival * expectedOffspring;
 }
 
 
