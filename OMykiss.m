@@ -356,6 +356,14 @@ Boston, MA 02111-1307, USA.
 	double newCondition;
 	double dailyStarvSurvival;
 	double Kt, KT, a, b;
+
+	if(myCell == nil)
+	{
+		fprintf(stderr, "ERROR: OMykiss >>>> anadromyFitnessWithGrowth >>>> fish cell is nil\n");
+		fflush(0);
+		exit(1);
+	}
+
 	
 	// First, calculate non-starvation survival over time horizon
 	nonStarveSurvival = pow(aSurvival,someDays);
@@ -369,6 +377,7 @@ Boston, MA 02111-1307, USA.
 	
 	if(fabs(fishCondition - newCondition) < 0.001) 
 	{
+		[myCell updateFishSurvivalProbFor: self];
 		dailyStarvSurvival = [myCell getStarvSurvivalFor: self];
 	}
 	else 
@@ -405,6 +414,8 @@ Boston, MA 02111-1307, USA.
 		exit(1);
 	 }
 	}
+
+	fprintf(stdout, "OMykiss anadromyFitnessWithGrowth nonStarv: %f starv: %f ocean: %f offspring: %f\n", nonStarveSurvival, starvSurvival, oceanSurvival, expectedOffspring);
 	
 	return nonStarveSurvival * starvSurvival * oceanSurvival * expectedOffspring;
 }
