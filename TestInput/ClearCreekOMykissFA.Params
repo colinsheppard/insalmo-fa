@@ -90,8 +90,8 @@ fishWeightParamB	2.9
 fishMemoryListLength		30
 fishSmoltDelay				7
 fishOceanSurvMax			0.84
-fishOceanSurvL01			17.5
-fishOceanSurvL09			29.4
+fishOceanSurvL1			17.5
+fishOceanSurvL9			29.4
 fishExpectedOffspringOceanFemale	7100
 fishExpectedOffspringOceanMale	3500
 fishMaturityDecisionDay			12/31

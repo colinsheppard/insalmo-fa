@@ -435,11 +435,13 @@ char **speciesColor;
   spawnVelocityInterpolatorMap = [Map create: modelZone];
   captureLogisticMap = [Map create: modelZone];
   juveOutMigLogisticMap = [Map create: modelZone];
+  oceanSurvivalLogisticMap = [Map create: modelZone]; // inSALMO-FA
   [self createCMaxInterpolators];
   [self createSpawnDepthInterpolators];
   [self createSpawnVelocityInterpolators];
   [self createCaptureLogistics];
   [self createJuveOutMigLogistics];
+  [self createOceanSurvivalLogistics]; // inSALMO-FA
 
   spawnerInitializationRecords = [List create: modelZone];
 
@@ -742,6 +744,37 @@ char **speciesColor;
                                                                  dep: 0.9];
   
      [juveOutMigLogisticMap at: [fishParams getFishSpecies] insert: anJuveOutMigLogistic]; 
+  }
+
+
+     return self;
+}
+
+
+//////////////////////////////////////////////////////////
+//
+// createOceanSurvivalLogistics
+//
+// inSALMO-FA
+///////////////////////////////////////////////////////////
+- createOceanSurvivalLogistics
+{
+
+  id <Index> mapNdx;
+  FishParams* fishParams;
+
+  mapNdx = [fishParamsMap mapBegin: scratchZone];
+ 
+  while(([mapNdx getLoc] != End) && ((fishParams = (FishParams *) [mapNdx next]) != nil))
+  {
+      LogisticFunc* anOceanSurvivalLogistic = [LogisticFunc createBegin: modelZone 
+                                                     withInputMethod: M(getFishLength) 
+                                                          usingIndep: fishParams->fishOceanSurvL1
+                                                                 dep: 0.1
+                                                               indep: fishParams->fishOceanSurvL9
+                                                                 dep: 0.9];
+  
+     [oceanSurvivalLogisticMap at: [fishParams getFishSpecies] insert: anOceanSurvivalLogistic]; 
   }
 
 
@@ -1991,6 +2024,7 @@ char **speciesColor;
   id <InterpolationTable> aSpawnVelocityInterpolator = nil;
   LogisticFunc* aCaptureLogistic = nil;
   LogisticFunc* anOutMigLogistic = nil;
+  LogisticFunc* anOceanSurvivalLogistic = nil; // inSALMO-FA
 
   //
   // The newSpawner color is currently being set in the observer swarm
@@ -2055,12 +2089,14 @@ char **speciesColor;
   aSpawnVelocityInterpolator = [spawnVelocityInterpolatorMap at: species];
   aCaptureLogistic = [captureLogisticMap at: species];
   anOutMigLogistic = [juveOutMigLogisticMap at: species];
+  anOceanSurvivalLogistic = [oceanSurvivalLogisticMap at: species]; // inSALMO-FA
   
   [newSpawner setCMaxInterpolator: aCMaxInterpolator];
   [newSpawner setSpawnDepthInterpolator: aSpawnDepthInterpolator];
   [newSpawner setSpawnVelocityInterpolator: aSpawnVelocityInterpolator];
   [newSpawner setCaptureLogistic: aCaptureLogistic];
   [newSpawner setJuveOutMigLogistic: anOutMigLogistic];
+  [newSpawner setOceanSurvivalLogistic: anOceanSurvivalLogistic]; // inSALMO-FA
 
   fishCounter++;  // Give each fish a serial number ID
   [newSpawner setFishID: fishCounter];
@@ -3395,6 +3431,10 @@ char **speciesColor;
     juveOutMigLogisticMap = nil;
      // fprintf(stdout, "After drop juveOutMigLogisticMap\n");
      // fflush(0);
+
+	[oceanSurvivalLogisticMap deleteAll]; // inSALMO-FA
+    [oceanSurvivalLogisticMap drop];
+    oceanSurvivalLogisticMap = nil;
 
      [mortalityCountLstNdx drop];
      mortalityCountLstNdx = nil;

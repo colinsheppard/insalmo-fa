@@ -240,6 +240,7 @@ double lftBigOutmigrantsSizeThreshold; // Size defining "big" outmigrants
   id <Map> spawnVelocityInterpolatorMap; //One for each species
   id <Map> captureLogisticMap; //One for each species
   id <Map> juveOutMigLogisticMap; //One for each species
+  id <Map> oceanSurvivalLogisticMap; //One for each species  inSALMO-FA
 
 
   time_t modelTime;  // time_t as measured at noon
@@ -344,6 +345,7 @@ double lftBigOutmigrantsSizeThreshold; // Size defining "big" outmigrants
 - createSpawnVelocityInterpolators;
 - createCaptureLogistics;
 - createJuveOutMigLogistics;
+- createOceanSurvivalLogistics; // inSALMO-FA
 
 - createSpawners;
 - readFishInitializationFiles;

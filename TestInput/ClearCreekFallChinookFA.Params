@@ -91,8 +91,8 @@ fishWeightParamB                  3.49
 fishMemoryListLength			99
 fishSmoltDelay					99
 fishOceanSurvMax				0.99
-fishOceanSurvL01				9.9
-fishOceanSurvL09				99.9
+fishOceanSurvL1				9.9
+fishOceanSurvL9				99.9
 fishExpectedOffspringOceanFemale	999
 fishExpectedOffspringOceanMale	999
 fishMaturityDecisionDay			9/9

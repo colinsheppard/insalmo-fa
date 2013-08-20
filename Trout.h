@@ -142,6 +142,7 @@ double captureSuccess;
 double captureArea;
 LogisticFunc* captureLogistic;
 LogisticFunc* juveOutMigLogistic;
+LogisticFunc* oceanSurvivalLogistic;  // inSALMO-FA
 double maxSwimSpeedForCell;
 double detectDistance;
 double potentialHourlyDriftIntake;
@@ -225,6 +226,7 @@ id toggledFishForHabSurvUpdate;
 - setSpawnVelocityInterpolator: (id <InterpolationTable>) anInterpolator;
 - setCaptureLogistic: (LogisticFunc *) aLogisticFunc;
 - setJuveOutMigLogistic: (LogisticFunc *) aLogisticFunc;
+- setOceanSurvivalLogistic: (LogisticFunc *) aLogisticFunc; // inSALMO-FA
 - setFishID: (int) anID;
 
 

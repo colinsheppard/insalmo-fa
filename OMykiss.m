@@ -346,7 +346,67 @@ Boston, MA 02111-1307, USA.
 						andSurvival: (double) aSurvival
 						andTimeHorizon: (int) someDays
 {
-	return pow(aSurvival,someDays); // Stub for now
+	double nonStarveSurvival;
+	double starvSurvival;
+	double oceanSurvival = 1.0;
+	double expectedOffspring = 999;
+	
+	double newWeight;
+	double newLength;
+	double newCondition;
+	double dailyStarvSurvival;
+	double Kt, KT, a, b;
+	
+	// First, calculate non-starvation survival over time horizon
+	nonStarveSurvival = pow(aSurvival,someDays);
+	
+	// Second, calculate starvation survival over time horizon
+	// This duplicates some stuff in methods called by expectedMaturityAt:
+	newWeight = fishWeight + (aGrowth * someDays);
+	if(newWeight < 0.0) {newWeight = 0.0;}
+	newLength = [self getLengthForNewWeight: newWeight];
+	newCondition = [self getConditionForWeight: newWeight andLength: newLength];
+	
+	if(fabs(fishCondition - newCondition) < 0.001) 
+	{
+		dailyStarvSurvival = [myCell getStarvSurvivalFor: self];
+	}
+	else 
+	{
+		a = starvPa; 
+		b = starvPb; 
+		Kt = fishCondition;  //current fish condition
+		KT = newCondition;
+		dailyStarvSurvival =  (1/a)*(log((1+exp(a*KT+b))/(1+exp(a*Kt+b))))/(KT-Kt); 
+	}  
+
+	if(isnan(dailyStarvSurvival) || isinf(dailyStarvSurvival))
+	{
+		fprintf(stderr, "ERROR: OMykiss >>>> anadromyFitnessWithGrowth >>>> dailyStarvSurvival = %f\n", dailyStarvSurvival);
+		fflush(0);
+		exit(1);
+	}
+
+	starvSurvival = pow(dailyStarvSurvival,someDays);
+	
+	// Third, calculate expected ocean survival at end of time horizon
+	oceanSurvival = fishParams->fishOceanSurvMax
+		* [oceanSurvivalLogistic evaluateFor: newLength];
+	
+	// Finally, calculate expected offspring from sex
+	if(sex == Female) {expectedOffspring = fishParams->fishExpectedOffspringOceanFemale;}
+	else
+	{
+	 if(sex == Male) {expectedOffspring = fishParams->fishExpectedOffspringOceanMale;}
+	 else
+	 {
+		fprintf(stderr, "ERROR: OMykiss >>>> anadromyFitnessWithGrowth >>>> sex not set\n");
+		fflush(0);
+		exit(1);
+	 }
+	}
+	
+	return nonStarveSurvival * starvSurvival * oceanSurvival * expectedOffspring;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -360,5 +420,6 @@ Boston, MA 02111-1307, USA.
 {
 	return pow(aSurvival,someDays); // Stub for now
 }
+
 
 @end

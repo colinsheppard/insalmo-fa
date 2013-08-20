@@ -56,6 +56,7 @@ Boston, MA 02111-1307, USA.
   newTrout->isSpawner = NO;
   newTrout->isFemale = NO;
   newTrout->deathCausedBy = NULL;
+  newTrout->oceanSurvivalLogistic = nil;  // inSALMO-FA
 
   return newTrout;
 }
@@ -346,6 +347,19 @@ Boston, MA 02111-1307, USA.
    juveOutMigLogistic = aLogisticFunc;
    return self;
 }
+
+////////////////////////////////////////////////////
+//
+// setOceanSurvivalLogistic
+//
+// inSALMO-FA
+////////////////////////////////////////////////////
+- setOceanSurvivalLogistic: (LogisticFunc *) aLogisticFunc
+{
+   oceanSurvivalLogistic = aLogisticFunc;
+   return self;
+}
+
 
 
 
@@ -1220,7 +1234,7 @@ Boston, MA 02111-1307, USA.
 
 
       //
-      // If we're dead or male we can't spawn we can't spawn
+      // If we're dead or male we can't spawn
       //
       // But if we're male and it's the last day of spawning, then
       // we have to do it by ourselves.
