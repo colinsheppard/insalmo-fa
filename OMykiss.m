@@ -180,14 +180,132 @@ Boston, MA 02111-1307, USA.
 //////////////////////////////////////////////////////////////////////
 //
 // moveAsPresmolt
+// modified from moveToMaximizeMaturity
 //
 //////////////////////////////////////////////////////////////////////
-- moveAsPresmolt              // Stub for now
+- moveAsPresmolt
 {
-         [self moveToMaximizeExpectedMaturity];
+  id <ListIndex> destNdx;
+  FishCell *destCell=nil;
+  FishCell *bestDest=nil;
+  double bestPresmoltFitness=0.0;
+  double presmoltFitnessHere=0.0;
+  double presmoltFitnessAtDest=0.0;
 
-		 return self;
-}
+  //double outMigFuncValue = [juveOutMigLogistic evaluateFor: fishLength];
+
+  //fprintf(stdout, "Trout >>>> moveAsPresmolt >>>> BEGIN >>>> fish = %p\n", self);
+  //fprintf(stdout, "Trout >>>> moveAsPresmolt >>>> outMigFuncValue = %f\n", outMigFuncValue);
+  //fflush(0);
+  //exit(0);
+
+  if(myCell == nil) 
+  {
+    fprintf(stderr, "WARNING: Trout >>>> moveAsPresmolt >>>> Fish 0x%p has no Cell context.\n", self);
+    fflush(0);
+    return self;
+  }
+
+  //
+  // Calculate the variables that depend only on the reach that a fish is in.
+  //  (can't do this because cells may be in multiple reaches, with different 
+  //  temperature and turbidity. Moved to presmoltFitnessAt:
+  // temporaryTemperature = [myCell getTemperature];
+  // standardResp    = [self calcStandardRespirationAt: myCell];
+  // cMax            = [self calcCmax: temporaryTemperature];
+  // detectDistance  = [self calcDetectDistanceAt: myCell]; 
+
+  //
+  // calculate our expected fitness here
+  //
+  presmoltFitnessHere = [self presmoltFitnessAt: myCell];
+ 
+  if(destCellList == nil)
+  {
+      fprintf(stderr, "ERROR: Trout >>>> moveAsPresmolt >>>> destCellList is nil\n");
+      fflush(0);
+      exit(1);
+  }
+
+  //
+  // destCellList must be empty
+  // before it is populated.
+  //
+  [destCellList removeAll];
+  
+  //
+  // Now, let the habitat space populate
+  // the destCellList with myCells adjacent cells
+  // and any other cells that are within
+  // maxMoveDistance.
+  //
+  //fprintf(stdout, "Trout >>>> moveAsPresmolt >>>> maxMoveDistance = %f\n", maxMoveDistance);
+   //fflush(0);
+  //xprint(myCell);
+
+
+  [myCell getNeighborsWithin: maxMoveDistance
+                    withList: destCellList];
+
+  destNdx = [destCellList listBegin: scratchZone];
+  while (([destNdx getLoc] != End) && ((destCell = [destNdx next]) != nil))
+  {
+      //
+      // SHUNT FOR DEPTH ... it's assumed fish won't jump onto shore
+      //
+      if([destCell getPolyCellDepth] <= 0.0)
+      {
+         continue;
+      }
+
+      presmoltFitnessAtDest = [self presmoltFitnessAt: destCell];
+
+      if (presmoltFitnessAtDest >= bestPresmoltFitness) 
+      {
+	  bestPresmoltFitness = presmoltFitnessAtDest;
+	  bestDest = destCell;
+      }
+
+   }  //while destNdx
+
+   if(presmoltFitnessHere >= bestPresmoltFitness) 
+   {
+      //
+      // Stay here 
+      //
+      bestDest = myCell;
+      bestPresmoltFitness = presmoltFitnessHere;
+   }
+
+   if(bestDest == nil) 
+   { 
+      fprintf(stderr, "ERROR: Trout >>>> moveAsPresmolt >>>> bestDest is nil\n");
+      fflush(0);
+      exit(1);
+   }
+
+   // 
+   //  Now, move -- No outmigration allowed for presmolts
+   //
+
+   [self moveToBestDest: bestDest];
+
+   //
+   // RESOURCE CLEANUP
+   // 
+   if(destNdx != nil) 
+   {
+     [destNdx drop];
+   }
+
+
+  //fprintf(stderr, "Trout >>>> moveAsPresmolt >>>> END >>>> presmoltFitnessAtDest = %f\n", presmoltFitnessAtDest);
+  //fprintf(stderr, "Trout >>>> moveAsPresmolt >>>> END >>>> fish = %p\n", self);
+  //fflush(0);
+
+  return self;
+
+} // moveAsPresmolt
 
 //////////////////////////////////////////////////////////////////////
 //
@@ -535,6 +653,132 @@ Boston, MA 02111-1307, USA.
 	
 	return nonStarveSurvival * starvSurvival * expectedOffspring;
 }
+
+////////////////////////////////////////////////
+//
+// presmoltFitnessAt
+// modified from expectedMaturityAt
+//
+////////////////////////////////////////////////
+- (double) presmoltFitnessAt: (FishCell *) aCell 
+{ 
+  double growthForCell;
+  // double nonStarvSurvivalForCell; 
+  int T; // fitness horizon
+  // double conditionAtTForCell; 
+  // double fracMatureAtTForCell; 
+  // double T;                    //fishFitnessHorizon
+  // double Kt, KT, a, b;
+  // double starvSurvival;
+  double presmoltFitnessAtACell = 0.0;
+  double totalNonStarvSurv = 0.0;
+  
+  time_t now;
+
+  // Time horizon is number of days until smolting, always at least 1
+  now = [self getCurrentTimeT];
+  if(now > smoltTime)
+  {
+     fprintf(stderr, "ERROR: OMkiss >>>> presmoltFitnessAt >>>> smoltTime is before now\n");
+     fflush(0);
+     exit(1);
+  }
+  
+  T = [timeManager getNumberOfDaysBetween: now and: smoltTime];
+  if(T < 1) {T = 1;}
+
+  if(aCell == nil)
+  {
+     fprintf(stderr, "ERROR: OMkiss >>>> presmoltFitnessAt >>>> aCell = nil\n");
+     fflush(0);
+     exit(1);
+  }
+
+  growthForCell = [self calcNetEnergyForCell: aCell] / (fishParams->fishEnergyDensity);
+  // weightAtTForCell = [self getWeightWithIntake: (T * netEnergyForCell) ]; 
+  // lengthAtTForCell = [self getLengthForNewWeight: weightAtTForCell];
+  // conditionAtTForCell = [self getConditionForWeight: weightAtTForCell andLength: lengthAtTForCell];
+
+  // fracMatureAtTForCell = [self getFracMatureForLength: lengthAtTForCell];
+
+  //
+  // The following variables: maxSwimSpeedForCell, feedTimeForCell, 
+  // depthLengthRatioForCell are set here because they depend on
+  // both cell and fish. They are then used by the
+  // survivalManager via fish get methods.
+  //
+  maxSwimSpeedForCell = [self calcMaxSwimSpeedAt: aCell];
+  feedTimeForCell = [self calcFeedTimeAt: aCell];
+  depthLengthRatioForCell = [self calcDepthLengthRatioAt: aCell];
+  
+  // and these trout instance variables depend on reach and fish
+  standardResp = [self calcStandardRespirationAt: aCell];
+  cMax = [self calcCmax: [aCell getTemperature]];
+  detectDistance = [self calcDetectDistanceAt: aCell]; 
+
+
+  //
+  // Now update the survival manager...
+  //
+
+  if(aCell == nil)
+  {
+      fprintf(stderr, "OMkiss >>>> presmoltFitnessAt >>>> aCell is nil\n");
+      fprintf(stderr, "OMkiss >>>> presmoltFitnessAt >>>> isSpawner = %d\n", (int) isSpawner);
+      fflush(0);
+      exit(1);
+  }
+
+  [aCell updateFishSurvivalProbFor: self];
+
+  // if(fabs(fishCondition - conditionAtTForCell) < 0.001) 
+  // {
+      // starvSurvival = [aCell getStarvSurvivalFor: self];
+  // }
+  // else 
+  // {
+     // a = starvPa; 
+     // b = starvPb; 
+     // Kt = fishCondition;  //current fish condition
+     // KT = conditionAtTForCell;
+     // starvSurvival =  (1/a)*(log((1+exp(a*KT+b))/(1+exp(a*Kt+b))))/(KT-Kt); 
+  // }  
+
+  // if(isnan(starvSurvival) || isinf(starvSurvival))
+  // {
+     // fprintf(stderr, "ERROR: OMkiss >>>> presmoltFitnessAt >>>> starvSurvival = %f\n", starvSurvival);
+     // fflush(0);
+     // exit(1);
+  // }
+
+  totalNonStarvSurv = [aCell getTotalKnownNonStarvSurvivalProbFor: self];
+
+  if(isnan(totalNonStarvSurv) || isinf(totalNonStarvSurv))
+  {
+     fprintf(stderr, "ERROR: OMkiss >>>> presmoltFitnessAt >>>> totalNonStarvSurv = %f\n", totalNonStarvSurv);
+     fflush(0);
+  }
+
+  presmoltFitnessAtACell = [self anadromyFitnessWithGrowth: growthForCell
+						andSurvival: totalNonStarvSurv
+						andTimeHorizon: T];
+						
+  if(isnan(presmoltFitnessAtACell) || isinf(presmoltFitnessAtACell))
+  {
+     fprintf(stderr, "ERROR: OMkiss >>>> presmoltFitnessAt >>>> presmoltFitnessAtACell = %f\n", presmoltFitnessAtACell);
+     fflush(0);
+     exit(1);
+  }
+
+  if(presmoltFitnessAtACell < 0.0)
+  {
+     fprintf(stderr, "ERROR: OMkiss >>>> presmoltFitnessAt >>>> presmoltFitnessAtACell = %f is less than ZERO\n", presmoltFitnessAtACell);
+     fflush(0);
+     exit(1);
+  }
+
+  return presmoltFitnessAtACell;
+}  // presmoltFitnessAt
 
 
 
