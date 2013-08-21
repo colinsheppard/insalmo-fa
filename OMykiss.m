@@ -86,7 +86,7 @@ Boston, MA 02111-1307, USA.
 //////////////////////////////////////////////////////////////////////
 - move 
 {
-       //fprintf(stdout, "Trout >>>> move >>>> BEGIN\n");
+       //fprintf(stdout, "OMykiss >>>> move >>>> BEGIN\n");
        //fflush(0);
    //
    // calcMaxMoveDistance sets the ivar
@@ -107,7 +107,7 @@ Boston, MA 02111-1307, USA.
 
        [self moveToBestDest: myCell];
 
-       //fprintf(stdout, "Trout >>>> move >>>> depthLengthRatioForCell = %f\n",depthLengthRatioForCell);
+       //fprintf(stdout, "OMykiss >>>> move >>>> depthLengthRatioForCell = %f\n",depthLengthRatioForCell);
      } // if spawned this seasons
 
      else
@@ -132,8 +132,17 @@ Boston, MA 02111-1307, USA.
      }
 
 	 if(lifestageSymbol == [model getJuvenileLifestageSymbol])
+	 // Juveniles cannot outmigrate after fishMemoryListLength number of days
      {
-         [self moveToMaximizeExpectedMaturity];
+		if([memoryList getCount] < fishParams->fishMemoryListLength) // cannot be "<=" !!
+		{
+			[self moveToMaximizeExpectedMaturity];
+		}
+		else
+		{
+			// This existing method does what we want despite its name
+			[self moveInReachToMaximizeSurvival]; 
+		}
      }
 
      else  // "else"s are necessary to keep a fish from moving twice if they change life stage
@@ -513,6 +522,7 @@ Boston, MA 02111-1307, USA.
 	
 	return nonStarveSurvival * starvSurvival * expectedOffspring;
 }
+
 
 
 @end
