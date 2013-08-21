@@ -30,6 +30,8 @@ Boston, MA 02111-1307, USA.
 @interface OMykiss : Trout 
 {
 
+  time_t smoltTime; 
+
 }
 + createBegin: aZone;
 - (int) compareArrivalTime: aSpawner;

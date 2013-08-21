@@ -219,6 +219,7 @@ Boston, MA 02111-1307, USA.
 // inSALMO-FA -- the fifth fish action 
 //
 // This action includes updating growth & survival memory,
+// transition of presmolts to smolts,
 // decision of juveniles of whether to become presmolts, and
 // decision by juveniles whether to become prespawners. 
 //
@@ -236,9 +237,22 @@ Boston, MA 02111-1307, USA.
 	int residenceTimeHorizon;
 	time_t now;
 	
+	now = [self getCurrentTimeT];
+	
+	// First, take care of presmolts
+	if(lifestageSymbol == [model getPresmoltLifestageSymbol])
+	{
+		if(now >= smoltTime)
+		{
+			lifestageSymbol = [model getSmoltLifestageSymbol];
+		}
+		return self;
+	}
+	
+	// Everything below here is done only by juveniles
 	if(lifestageSymbol != [model getJuvenileLifestageSymbol])
 	{
-	 return self;  // Only juveniles use this method.
+	 return self;
 	}
 	 
 	// fprintf(stdout, "OMykiss >>>> selectLifeHistory >>>> Before create memory\n");
@@ -329,8 +343,6 @@ Boston, MA 02111-1307, USA.
 	//
 	// First, calculate residence time horizon
 	//
-	now = [self getCurrentTimeT];
-	
 	if(age == 0)
 	{
 		residenceTimeHorizon = 365 + [timeManager getNumberOfDaysBetween: now
@@ -366,6 +378,7 @@ Boston, MA 02111-1307, USA.
 	if(anadromyFitness > residenceFitness)
 	{
 		lifestageSymbol = [model getPresmoltLifestageSymbol];
+		smoltTime = now + (fishParams->fishSmoltDelay * 86400); // convert days to seconds for time_t
 	}
 
 	return self;
