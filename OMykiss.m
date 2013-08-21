@@ -620,6 +620,13 @@ Boston, MA 02111-1307, USA.
 	 return self;
 	}
 	 
+	// Juveniles do not make life history decisions after their age in years
+	// exceeds 2
+	if(age >= 2)
+	{
+		return self;
+	}
+	
 	// fprintf(stdout, "OMykiss >>>> selectLifeHistory >>>> Before create memory\n");
 	// fflush(0);
 
@@ -660,13 +667,7 @@ Boston, MA 02111-1307, USA.
 	{
 		return self;
 	}
-	// Juveniles do not make life history decisions after their age in years
-	// exceeds 2
-	if(age >= 2)
-	{
-		return self;
-	}
-	
+
 	// Now update means over memory
 	// First create the averagers if they doesn't exist.
 	// (Does not work to use one averager for both selectors)
@@ -745,6 +746,17 @@ Boston, MA 02111-1307, USA.
 	{
 		lifestageSymbol = [model getPresmoltLifestageSymbol];
 		smoltTime = now + (fishParams->fishSmoltDelay * 86400); // convert days to seconds for time_t
+		return self;
+	}
+	
+	// Finally, if fish is still a juvenile when it is time to
+	// commit to maturing at age 2, then switch it to prespawner.
+	if((age == 1) && ([timeManager getNumberOfDaysBetween: now
+		and: [timeManager getTimeTForNextMMDD: fishParams->fishSpawnStartDate
+					givenThisTimeT: now]]
+			<= fishParams->fishMaturityDecisionInterval))
+	{
+		lifestageSymbol = [model getPrespawnLifestageSymbol];
 	}
 
 	return self;

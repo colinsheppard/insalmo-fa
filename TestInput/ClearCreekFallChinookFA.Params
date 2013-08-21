@@ -95,7 +95,7 @@ fishOceanSurvL1				9.9
 fishOceanSurvL9				99.9
 fishExpectedOffspringOceanFemale	999
 fishExpectedOffspringOceanMale	999
-fishMaturityDecisionDay			9/9
+fishMaturityDecisionInterval		99
 
 mortFishAqPredD1                    20
 mortFishAqPredD9                    10

@@ -94,7 +94,7 @@ fishOceanSurvL1			17.5
 fishOceanSurvL9			29.4
 fishExpectedOffspringOceanFemale	7100
 fishExpectedOffspringOceanMale	3500
-fishMaturityDecisionDay			10/15
+fishMaturityDecisionInterval		108
 
 mortFishAqPredD1                    20
 mortFishAqPredD9                    10

@@ -222,13 +222,13 @@ double reddSize;
 
 // insalmo-fa unique params
 int fishMemoryListLength;
-double fishSmoltDelay;
+int fishSmoltDelay;
 double fishOceanSurvMax;
 double fishOceanSurvL1;
 double fishOceanSurvL9;
 double fishExpectedOffspringOceanFemale;
 double fishExpectedOffspringOceanMale;
-double fishMaturityDecisionDay;
+int fishMaturityDecisionInterval;
 
 //END CONSTANTS INITIALIZED BY THE .Params FILE
 
