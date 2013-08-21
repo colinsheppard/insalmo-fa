@@ -181,6 +181,7 @@ Boston, MA 02111-1307, USA.
 //
 // moveAsPresmolt
 // modified from moveToMaximizeMaturity
+// This is also used by smolts after they move down into a new reach
 //
 //////////////////////////////////////////////////////////////////////
 - moveAsPresmolt
@@ -310,13 +311,135 @@ Boston, MA 02111-1307, USA.
 //////////////////////////////////////////////////////////////////////
 //
 // moveAsSmolt
+// modified from moveToMaximizeMaturity
 //
 //////////////////////////////////////////////////////////////////////
-- moveAsSmolt              // Stub for now
+- moveAsSmolt
 {
-         [self moveToMaximizeExpectedMaturity];
+  // id <ListIndex> destNdx;
+  // FishCell *destCell=nil;
+  FishCell *bestDest=nil;
+  // double bestExpectedMaturity=0.0;
+  // double expectedMaturityHere=0.0;
+  // double expectedMaturityAtDest=0.0;
 
-		 return self;
+  // double outMigFuncValue = [juveOutMigLogistic evaluateFor: fishLength];
+
+  //fprintf(stdout, "Trout >>>> moveAsSmolt >>>> BEGIN >>>> fish = %p\n", self);
+  //fprintf(stdout, "Trout >>>> moveAsSmolt >>>> outMigFuncValue = %f\n", outMigFuncValue);
+  //fflush(0);
+  //exit(0);
+
+  if(myCell == nil) 
+  {
+    fprintf(stderr, "WARNING: Trout >>>> moveAsSmolt >>>> Fish 0x%p has no Cell context.\n", self);
+    fflush(0);
+    return self;
+  }
+
+  
+       //
+       // Find a cell in the downstreamLinksToUS 
+       //
+       
+       //fprintf(stdout, "Trout >>>> moveAsSmolt >>>> moving to downstream reach >>>> BEGIN\n");
+       //fflush(0);
+
+       id <List> habDownstreamLinksToUS =  [reach getHabDownstreamLinksToUS];
+       if([habDownstreamLinksToUS getCount] > 0)
+       {
+           id aReach = nil;
+           id <ListIndex> reachNdx = [habDownstreamLinksToUS listBegin: scratchZone];
+           id <List> oReachPotentialCells = [List create: scratchZone];
+           int numOKCells = 0;
+           while(([reachNdx getLoc] != End) && ((aReach = [reachNdx next]) != nil))
+           {
+   // Starting in V. 1.5, select among all DS cells that are not dry and have
+   // velocity less than fish max swim speed.
+
+                  id <List> cellList = [aReach getPolyCellList]; 
+ 
+                  if([cellList getCount] > 0)
+                  { 
+                      id <ListIndex> clNdx = [cellList listBegin: scratchZone];
+                      FishCell* fishCell = nil;
+                 
+                      while(([clNdx getLoc] != End) && ((fishCell = [clNdx next]) != nil))
+                      {
+    // Starting in V. 1.5, fish move down only into non-dry cells with vel < maxSwimSpeed
+    // Note that maxSwimSpeed is not updated for different temperature in new reach
+                          if([fishCell getPolyCellDepth] > 0.0 && [fishCell getPolyCellVelocity] < maxSwimSpeedForCell)
+                          {
+                              numOKCells++;
+                              [oReachPotentialCells addLast: fishCell];
+                          }
+                       }
+                       [clNdx drop];
+                       clNdx = nil;
+                  }
+            }
+            [reachNdx drop];
+
+            if(numOKCells == 0)
+            {
+                 [self moveToBestDest: bestDest];
+                  fprintf(stderr, "WARNING: Trout >>>> moveAsSmolt >>>>  habDownstreamLinksToUS none have good depth & vel >>>> juvenile staying in reach %s\n", [reach getReachName]);
+                  fflush(0);
+            }
+            else if(numOKCells == 1)
+            {
+                 bestDest = [oReachPotentialCells getFirst];
+            }
+            else
+            {
+                   //
+                   // randomly select one the cells meeting criteria
+                   //
+                   unsigned oReachCellChoice = [oReachCellChoiceDist getUnsignedWithMin: 0 withMax: (unsigned) (numOKCells - 1)]; 
+
+                   bestDest = [oReachPotentialCells atOffset: oReachCellChoice];
+
+            }
+               // 
+               // Now move to the downstream reach and repeat the move
+               //
+                  [self moveToBestDest: bestDest];
+              //    [self moveToMaximizeExpectedMaturity];
+			// Smolts move only one reach per day, so use presmolt method
+			// to find a good cell.
+                  [self moveAsPresmolt]; 
+        
+            [oReachPotentialCells removeAll];
+            [oReachPotentialCells drop];
+            oReachPotentialCells = nil;
+
+//         fprintf(stdout, "Trout >>>> moveAsSmolt >>>> moving to downstream reach >>>> reach = %s\n", [reach getReachName]);
+//         fprintf(stdout, "Trout >>>> moveAsSmolt >>>> moving to downstream [[myCell getReach] getReachName] %s\n", [[myCell getReach] getReachName]);
+//         fprintf(stdout, "Trout >>>> moveAsSmolt >>>> moving to downstream [[bestDest getReach] getReachName] %s\n", [[bestDest getReach] getReachName]);
+//         fprintf(stdout, "Trout >>>> moveAsSmolt >>>> moving to downstream reach >>>> END\n");
+//         fflush(0);
+
+         }
+
+         else   // No downstream reach to move into, so migrate out
+         {
+               //
+               // remove self from model
+               // bestDest is needed in outmigrateFrom
+               // so we can write output on movement from there.
+               //
+               [self outmigrateFrom: bestDest];
+               //[bestDest removeFish: self]; 
+         }
+
+
+
+  //fprintf(stderr, "Trout >>>> moveAsSmolt >>>> END >>>> expectedMaturityAtDest = %f\n", expectedMaturityAtDest);
+  //fprintf(stderr, "Trout >>>> moveAsSmolt >>>> END >>>> fish = %p\n", self);
+  //fflush(0);
+
+  return self;
+
 } // moveAsSmolt
 
 //////////////////////////////////////////////////////////////////////
@@ -801,16 +924,21 @@ Boston, MA 02111-1307, USA.
   time_t now;
 
   // Time horizon is number of days until smolting, always at least 1
-  now = [self getCurrentTimeT];
-  if(now > smoltTime)
+  // When this method is used by a smolt, set time horizon to 1
+  if(lifestageSymbol == [model getSmoltLifestageSymbol]) {T = 1;}
+  else
   {
-     fprintf(stderr, "ERROR: OMkiss >>>> presmoltFitnessAt >>>> smoltTime is before now\n");
-     fflush(0);
-     exit(1);
+	  now = [self getCurrentTimeT];
+	  if(now > smoltTime)
+	  {
+		 fprintf(stderr, "ERROR: OMkiss >>>> presmoltFitnessAt >>>> smoltTime is before now\n");
+		 fflush(0);
+		 exit(1);
+	  }
+	  
+	  T = [timeManager getNumberOfDaysBetween: now and: smoltTime];
+	  if(T < 1) {T = 1;}
   }
-  
-  T = [timeManager getNumberOfDaysBetween: now and: smoltTime];
-  if(T < 1) {T = 1;}
 
   if(aCell == nil)
   {
