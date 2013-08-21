@@ -52,6 +52,7 @@ Boston, MA 02111-1307, USA.
 						andTimeHorizon: (int) someDays;
 
 - (double) presmoltFitnessAt: (FishCell *) aCell;
+- (double) prespawnerFitnessAt: (FishCell *) aCell;
 
 @end
 
