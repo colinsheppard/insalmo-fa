@@ -3100,11 +3100,14 @@ char **speciesColor;
   [outmigrantReporter breakOutUsingSelector: @selector(getSpecies)
                            withListOfKeys: speciesSymbolList];
 
-  [outmigrantReporter breakOutUsingSelector: @selector(getNatalReachSymbol)
-                           withListOfKeys: reachSymbolList];
+  // [outmigrantReporter breakOutUsingSelector: @selector(getNatalReachSymbol)
+                           // withListOfKeys: reachSymbolList];
 
-  [outmigrantReporter breakOutUsingSelector: @selector(getSizeSymbol)
-                           withListOfKeys: sizeSymbolList];
+  // [outmigrantReporter breakOutUsingSelector: @selector(getSizeSymbol)
+                           // withListOfKeys: sizeSymbolList];
+
+  [outmigrantReporter breakOutUsingSelector: @selector(getLifestageSymbol)
+                           withListOfKeys: lifestageSymbolList];
 
   [outmigrantReporter createOutputWithLabel: "Count"
                              withSelector: @selector(getFishCount)

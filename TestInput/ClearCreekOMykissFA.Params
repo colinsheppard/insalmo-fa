@@ -88,7 +88,7 @@ fishWeightParamA	0.0185
 fishWeightParamB	2.9
 
 fishMemoryListLength		30
-fishSmoltDelay				140
+fishSmoltDelay				30
 fishOceanSurvMax			0.84
 fishOceanSurvL1			17.5
 fishOceanSurvL9			29.4
