@@ -906,7 +906,7 @@ Boston, MA 02111-1307, USA.
 	 }
 	}
 
-	fprintf(stdout, "OMykiss anadromyFitnessWithGrowth nonStarv: %f starv: %f ocean: %f offspring: %f\n", nonStarveSurvival, starvSurvival, oceanSurvival, expectedOffspring);
+	//fprintf(stdout, "OMykiss anadromyFitnessWithGrowth nonStarv: %f starv: %f ocean: %f offspring: %f\n", nonStarveSurvival, starvSurvival, oceanSurvival, expectedOffspring);
 	
 	return nonStarveSurvival * starvSurvival * oceanSurvival * expectedOffspring;
 }
@@ -975,7 +975,7 @@ Boston, MA 02111-1307, USA.
 	expectedOffspring = (fishParams->fishFecundParamA) *
 		pow(newLength,fishParams->fishFecundParamB);
 
-	fprintf(stdout, "OMykiss residenceFitnessWithGrowth timeHor: %d nonStarv: %f starv: %f offspring: %f\n", someDays, nonStarveSurvival, starvSurvival, expectedOffspring);
+	//fprintf(stdout, "OMykiss residenceFitnessWithGrowth timeHor: %d nonStarv: %f starv: %f offspring: %f\n", someDays, nonStarveSurvival, starvSurvival, expectedOffspring);
 	
 	return nonStarveSurvival * starvSurvival * expectedOffspring;
 }
@@ -1291,7 +1291,7 @@ Boston, MA 02111-1307, USA.
        fileMetaData = [BreakoutReporter reportFileMetaData: scratchZone];
        fprintf(lifeHistoryRptPtr,"\n%s\n",fileMetaData);
        [scratchZone free: fileMetaData];
-      fprintf(lifeHistoryRptPtr,"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+      fprintf(lifeHistoryRptPtr,"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
 	  "Date",
 	   "FishID",
 	   "Species",
@@ -1304,6 +1304,10 @@ Boston, MA 02111-1307, USA.
 	   "MemoryLength",
 	   "MeanGrowth",
 	   "MeanSurvival",
+	   "Length",
+	   "Weight",
+	   "starvPa",
+	   "starvPb",
 	   "ResTimeHorizon",
 	   "AnadFitness",
 	   "ResidentFitness");
@@ -1317,7 +1321,7 @@ Boston, MA 02111-1307, USA.
 	}
   }
 
-  fprintf(lifeHistoryRptPtr,"%s,%d,%s,%s,%d,%s,%s,%s,%d,%d,%f,%f,%d,%f,%f\n",
+  fprintf(lifeHistoryRptPtr,"%s,%d,%s,%s,%d,%s,%s,%s,%d,%d,%f,%f,%f,%f,%f,%f,%d,%f,%f\n",
 		[timeManager getDateWithTimeT: [self getCurrentTimeT]],
 		   fishID,
 		   [species getName],
@@ -1330,6 +1334,10 @@ Boston, MA 02111-1307, USA.
 		   aMemoryLength,
 		   aGrowth,
 		   aSurvival,
+		   fishLength,
+		   fishWeight,
+		   starvPa,
+		   starvPb,
 		   aHorizon,
 		   anAFitness,
 		   aRFitness);
