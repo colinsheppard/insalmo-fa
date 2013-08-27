@@ -791,7 +791,7 @@ Boston, MA 02111-1307, USA.
 	if(anadromyFitness > residenceFitness)
 	{
 		lifestageSymbol = [model getPresmoltLifestageSymbol];
-		smoltTime = now + (fishParams->fishSmoltDelay * 86400); // convert days to seconds for time_t
+		smoltTime = now + (time_t) (fishParams->fishSmoltDelay * 86400); // convert days to seconds for time_t
 		if([model getWriteLifeHistoryDecisionReport]){
 			[self printLHRptWithStartStage: [model getJuvenileLifestageSymbol]
 				endStage:  lifestageSymbol
@@ -1291,7 +1291,7 @@ Boston, MA 02111-1307, USA.
        fileMetaData = [BreakoutReporter reportFileMetaData: scratchZone];
        fprintf(lifeHistoryRptPtr,"\n%s\n",fileMetaData);
        [scratchZone free: fileMetaData];
-      fprintf(lifeHistoryRptPtr,"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+      fprintf(lifeHistoryRptPtr,"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
 	  "Date",
 	   "FishID",
 	   "Species",
@@ -1299,7 +1299,8 @@ Boston, MA 02111-1307, USA.
 	   "Age",
 	   "StartLifestage",
 	   "EndLifestage",
-	   "SmoltTime",
+	   "SmoltTime(formatted)",
+	   "SmoltTime(unformatted)",
 	   "MemoryLength",
 	   "MeanGrowth",
 	   "MeanSurvival",
@@ -1316,7 +1317,7 @@ Boston, MA 02111-1307, USA.
 	}
   }
 
-  fprintf(lifeHistoryRptPtr,"%s,%d,%s,%s,%d,%s,%s,%s,%d,%f,%f,%d,%f,%f\n",
+  fprintf(lifeHistoryRptPtr,"%s,%d,%s,%s,%d,%s,%s,%s,%d,%d,%f,%f,%d,%f,%f\n",
 		[timeManager getDateWithTimeT: [self getCurrentTimeT]],
 		   fishID,
 		   [species getName],
@@ -1325,7 +1326,7 @@ Boston, MA 02111-1307, USA.
 		   [startLifestageSymbol getName],
 		   [endLifestageSymbol getName],
 		   [timeManager getDateWithTimeT: smoltTime],
-//		   (int) smoltTime,
+		   (int) smoltTime,
 		   aMemoryLength,
 		   aGrowth,
 		   aSurvival,
