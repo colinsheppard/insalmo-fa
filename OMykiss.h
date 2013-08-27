@@ -54,5 +54,17 @@ Boston, MA 02111-1307, USA.
 - (double) presmoltFitnessAt: (FishCell *) aCell;
 - (double) prespawnerFitnessAt: (FishCell *) aCell;
 
+//REPORTS
+- printLHRptWithStartStage: (id <Symbol>) startLifestageSymbol
+	endStage:  (id <Symbol>) endLifestageSymbol
+	memListLength: (int) aMemoryLength
+	meanGrowth: (double) aGrowth
+	meanSurvival: (double) aSurvival
+	resTimeHorizon: (int) aHorizon
+	anadFitness: (double) anAFitness
+	resFitness: (double) aRFitness;
+
+- (void) drop;
+
 @end
 

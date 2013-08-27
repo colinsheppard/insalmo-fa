@@ -106,6 +106,8 @@ typedef struct FishSetupStruct SpawnerInitializationRecord;
   char   polyRasterColorVariable[35];
   double shadeColorMax;
 
+  // Optional Output Flags
+  BOOL  writeLifeHistoryDecisionReport;  // Controls the anadromy test file
 
 @protected
   id <Zone> modelZone;
@@ -329,6 +331,7 @@ double lftBigOutmigrantsSizeThreshold; // Size defining "big" outmigrants
 - instantiateObjects;
 - setObserverSwarm: anObserverSwarm;
 
+- (BOOL) getWriteLifeHistoryDecisionReport;
 
 
 - buildObjectsWith: theColormaps

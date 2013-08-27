@@ -35,7 +35,13 @@ Boston, MA 02111-1307, USA.
 
 + createBegin: aZone 
 {
-   return [super createBegin: aZone];
+	OMykiss * newOMykiss;
+	
+	newOMykiss = [super createBegin: aZone];
+	
+	newOMykiss->smoltTime = (time_t) 0; // Initialize a variable unique to OMykiss subclass
+	
+	return newOMykiss;
 }
 
 
@@ -611,12 +617,32 @@ Boston, MA 02111-1307, USA.
 		{
 			lifestageSymbol = [model getSmoltLifestageSymbol];
 		}
+		if([model getWriteLifeHistoryDecisionReport]){
+			[self printLHRptWithStartStage: [model getPresmoltLifestageSymbol]
+				endStage:  lifestageSymbol
+				memListLength: -99
+				meanGrowth: -99.9
+				meanSurvival: -99.9
+				resTimeHorizon: -99
+				anadFitness: -99.9
+				resFitness: -99.9];
+		}
 		return self;
 	}
 	
 	// Everything below here should be done only by juveniles
 	if(lifestageSymbol != [model getJuvenileLifestageSymbol])
 	{
+		if([model getWriteLifeHistoryDecisionReport]){
+			[self printLHRptWithStartStage: lifestageSymbol
+				endStage:  lifestageSymbol
+				memListLength: -99
+				meanGrowth: -99.9
+				meanSurvival: -99.9
+				resTimeHorizon: -99
+				anadFitness: -99.9
+				resFitness: -99.9];
+		}
 	 return self;
 	}
 	 
@@ -624,6 +650,16 @@ Boston, MA 02111-1307, USA.
 	// exceeds 2
 	if(age >= 2)
 	{
+		if([model getWriteLifeHistoryDecisionReport]){
+			[self printLHRptWithStartStage: [model getJuvenileLifestageSymbol]
+				endStage:  lifestageSymbol
+				memListLength: -99
+				meanGrowth: -99.9
+				meanSurvival: -99.9
+				resTimeHorizon: -99
+				anadFitness: -99.9
+				resFitness: -99.9];
+		}
 		return self;
 	}
 	
@@ -665,6 +701,16 @@ Boston, MA 02111-1307, USA.
 	// Length of memoryList should equal age in days up to fishMemoryListLength
 	if([memoryList getCount] < (fishParams->fishMemoryListLength))
 	{
+		if([model getWriteLifeHistoryDecisionReport]){
+			[self printLHRptWithStartStage: [model getJuvenileLifestageSymbol]
+				endStage:  lifestageSymbol
+				memListLength: [memoryList getCount]
+				meanGrowth: -99.9
+				meanSurvival: -99.9
+				resTimeHorizon: -99
+				anadFitness: -99.9
+				resFitness: -99.9];
+		}
 		return self;
 	}
 
@@ -746,6 +792,16 @@ Boston, MA 02111-1307, USA.
 	{
 		lifestageSymbol = [model getPresmoltLifestageSymbol];
 		smoltTime = now + (fishParams->fishSmoltDelay * 86400); // convert days to seconds for time_t
+		if([model getWriteLifeHistoryDecisionReport]){
+			[self printLHRptWithStartStage: [model getJuvenileLifestageSymbol]
+				endStage:  lifestageSymbol
+				memListLength: [memoryList getCount]
+				meanGrowth: meanGrowth
+				meanSurvival: meanSurvival
+				resTimeHorizon: residenceTimeHorizon
+				anadFitness: anadromyFitness
+				resFitness: residenceFitness];
+		}
 		return self;
 	}
 	
@@ -759,6 +815,16 @@ Boston, MA 02111-1307, USA.
 		lifestageSymbol = [model getPrespawnLifestageSymbol];
 	}
 
+	if([model getWriteLifeHistoryDecisionReport]){
+		[self printLHRptWithStartStage: [model getJuvenileLifestageSymbol]
+			endStage:  lifestageSymbol
+			memListLength: [memoryList getCount]
+			meanGrowth: meanGrowth
+			meanSurvival: meanSurvival
+			resTimeHorizon: residenceTimeHorizon
+			anadFitness: anadromyFitness
+			resFitness: residenceFitness];
+	}
 	return self;
 }
 
@@ -1196,6 +1262,82 @@ Boston, MA 02111-1307, USA.
   return prespawnerFitnessAtACell;
 }  // prespawnerFitnessAt
 
+
+/////////////////////////////////////////////////
+//
+// printLifeHistoryReportFor
+//
+/////////////////////////////////////////////////
+- printLHRptWithStartStage: (id <Symbol>) startLifestageSymbol
+	endStage:  (id <Symbol>) endLifestageSymbol
+	memListLength: (int) aMemoryLength
+	meanGrowth: (double) aGrowth
+	meanSurvival: (double) aSurvival
+	resTimeHorizon: (int) aHorizon
+	anadFitness: (double) anAFitness
+	resFitness: (double) aRFitness
+{
+  FILE * lifeHistoryRptPtr=NULL;
+  const char * lifeHistoryFileName = "LifeHistory_Out.csv";
+  static BOOL lifeHistoryFirstTime = YES;
+  char * fileMetaData;
+
+  if(lifeHistoryFirstTime == YES){
+      if((lifeHistoryRptPtr = fopen(lifeHistoryFileName,"w+")) == NULL){
+          fprintf(stderr, "ERROR: OMykiss >>>> printLHRptWithStartStage >>>> Cannot open report file %s for writing", lifeHistoryFileName);
+          fflush(0);
+          exit(1);
+      }
+       fileMetaData = [BreakoutReporter reportFileMetaData: scratchZone];
+       fprintf(lifeHistoryRptPtr,"\n%s\n",fileMetaData);
+       [scratchZone free: fileMetaData];
+      fprintf(lifeHistoryRptPtr,"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+	  "Date",
+	   "FishID",
+	   "Species",
+	   "Sex",
+	   "Age",
+	   "StartLifestage",
+	   "EndLifestage",
+	   "SmoltTime",
+	   "MemoryLength",
+	   "MeanGrowth",
+	   "MeanSurvival",
+	   "ResTimeHorizon",
+	   "AnadFitness",
+	   "ResidentFitness");
+  }
+  if(lifeHistoryFirstTime == NO){
+	if((lifeHistoryRptPtr = fopen(lifeHistoryFileName,"a")) == NULL) 
+	{
+        fprintf(stderr, "ERROR: OMykiss >>>> printLHRptWithStartStage >>>> Cannot open report file %s for writing", lifeHistoryFileName);
+	    fflush(0);
+	    exit(1);
+	}
+  }
+
+  fprintf(lifeHistoryRptPtr,"%s,%d,%s,%s,%d,%s,%s,%s,%d,%f,%f,%d,%f,%f\n",
+		[timeManager getDateWithTimeT: [self getCurrentTimeT]],
+		   fishID,
+		   [species getName],
+		   [sex getName],
+		   age,
+		   [startLifestageSymbol getName],
+		   [endLifestageSymbol getName],
+		   [timeManager getDateWithTimeT: smoltTime],
+//		   (int) smoltTime,
+		   aMemoryLength,
+		   aGrowth,
+		   aSurvival,
+		   aHorizon,
+		   anAFitness,
+		   aRFitness);
+
+  //fflush(lifeHistoryRptPtr);
+  fclose(lifeHistoryRptPtr);
+  lifeHistoryFirstTime = NO;
+  return self;
+}
 
 
 @end

@@ -68,9 +68,20 @@ char **speciesColor;
   troutModelSwarm->memoryGrowthAverager = nil; // inSALMO-FA
   troutModelSwarm->memorySurvivalAverager = nil; // inSALMO-FA
 
+  // Initialize optional output file controls
+  troutModelSwarm->writeLifeHistoryDecisionReport = NO;
 
   return troutModelSwarm;
 
+}
+
+/////////////////////////////////////////////////////////////////
+//
+// getWriteLifeHistoryDecisionReport
+//
+//////////////////////////////////////////////////////////////
+- (BOOL) getWriteLifeHistoryDecisionReport {
+  return writeLifeHistoryDecisionReport;
 }
 
 

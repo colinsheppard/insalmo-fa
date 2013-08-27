@@ -6,7 +6,7 @@
 randGenSeed                  32461
 
 runStartDate                 10/1/2006
-runEndDate                   9/30/2007
+runEndDate                   10/30/2007
 fishOutputFile               Live_Fish_Out.csv
 fishMortalityFile            Dead_Fish_Out.csv
 reddOutputFile               Redds_Out.csv
@@ -22,6 +22,8 @@ shuffleYearSeed              737899
 siteLatitude                 40
 
 juvenileSuperindividualRatio 20
+
+writeLifeHistoryDecisionReport	1
 
 @end
 
