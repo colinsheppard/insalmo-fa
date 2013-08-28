@@ -25,7 +25,7 @@ Boston, MA 02111-1307, USA.
 */
 
 //
-// MemoryElement contains a fish's memory of growth and survival
+// MemoryElement contains a fish's memory of length and survival
 // for one time step. Developed for inSALMO-FA.
 //
 
@@ -37,18 +37,18 @@ Boston, MA 02111-1307, USA.
 {
 
     double survivalValue;
-    double growthValue;
+    double lengthValue;
 
 }
 
 + createBegin: aZone
-   withGrowth: (double) aGrowth
+   withLength: (double) aLength
   andSurvival: (double) aSurvival;
 
 - createEnd;
 
 - (double) getSurvivalValue;
-- (double) getGrowthValue;
+- (double) getLengthValue;
 
 - (void) drop;
 

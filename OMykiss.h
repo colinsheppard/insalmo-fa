@@ -58,7 +58,8 @@ Boston, MA 02111-1307, USA.
 - printLHRptWithStartStage: (id <Symbol>) startLifestageSymbol
 	endStage:  (id <Symbol>) endLifestageSymbol
 	memListLength: (int) aMemoryLength
-	meanGrowth: (double) aGrowth
+	anadGrowth: (double) anAnadGrowth
+	resGrowth: (double) aResGrowth
 	meanSurvival: (double) aSurvival
 	resTimeHorizon: (int) aHorizon
 	anadFitness: (double) anAFitness

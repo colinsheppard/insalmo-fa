@@ -592,13 +592,14 @@ Boston, MA 02111-1307, USA.
 - selectLifeHistory
 {
 
-	double meanGrowth;   // over memory period
+	double meanLengthGrowth;   // In length, over memory period
 	double meanSurvival; // over memory period
+	double anadromyGrowth;   // In weight, over anadromy time horizon
+	double residenceGrowth;   // In weight, over residence time horizon
 	id aMemory;          // Did not work to declare as <MemoryElement>
-	id <Averager> theGrowthAverager; // Did not work to use one averager for growth & survival
-	id <Averager> theSurvivalAverager; // Did not work to use one averager for growth & survival
-	double anadromyFitness;
-	double residenceFitness;
+	id <Averager> theSurvivalAverager; 
+	double predictedLength, predictedWeight;
+	double anadromyFitness, residenceFitness;
 	int residenceTimeHorizon;
 	time_t now;
 	
@@ -621,7 +622,8 @@ Boston, MA 02111-1307, USA.
 			[self printLHRptWithStartStage: [model getPresmoltLifestageSymbol]
 				endStage:  lifestageSymbol
 				memListLength: -99
-				meanGrowth: -99.9
+				anadGrowth: -99.9
+				resGrowth: -99.9
 				meanSurvival: -99.9
 				resTimeHorizon: -99
 				anadFitness: -99.9
@@ -630,14 +632,16 @@ Boston, MA 02111-1307, USA.
 		return self;
 	}
 	
-	// Everything below here should be done only by juveniles
+	// Everything below here should be done only by juveniles, so if
+	// you aren't juvenile then report and quit.
 	if(lifestageSymbol != [model getJuvenileLifestageSymbol])
 	{
 		if([model getWriteLifeHistoryDecisionReport]){
 			[self printLHRptWithStartStage: lifestageSymbol
 				endStage:  lifestageSymbol
 				memListLength: -99
-				meanGrowth: -99.9
+				anadGrowth: -99.9
+				resGrowth: -99.9
 				meanSurvival: -99.9
 				resTimeHorizon: -99
 				anadFitness: -99.9
@@ -654,7 +658,8 @@ Boston, MA 02111-1307, USA.
 			[self printLHRptWithStartStage: [model getJuvenileLifestageSymbol]
 				endStage:  lifestageSymbol
 				memListLength: -99
-				meanGrowth: -99.9
+				anadGrowth: -99.9
+				resGrowth: -99.9
 				meanSurvival: -99.9
 				resTimeHorizon: -99
 				anadFitness: -99.9
@@ -666,14 +671,14 @@ Boston, MA 02111-1307, USA.
 	// fprintf(stdout, "OMykiss >>>> selectLifeHistory >>>> Before create memory\n");
 	// fflush(0);
 
-	// Update memory list with today's growth & survival
+	// Update memory list with today's length & survival
 	aMemory = [MemoryElement createBegin: [model getModelZone]
-			withGrowth: netEnergyForBestCell/(fishParams->fishEnergyDensity)
+			withLength: fishLength
 			andSurvival: nonStarvSurvival];
 	aMemory = [aMemory createEnd];
 
-	// fprintf(stdout, "OMykiss >>>> After new memory; today's growth: %f, today's survival: %f\n", 
-	// [aMemory getGrowthValue], [aMemory getSurvivalValue]);
+	// fprintf(stdout, "OMykiss >>>> After new memory; today's length: %f, today's survival: %f\n", 
+	// [aMemory getLengthValue], [aMemory getSurvivalValue]);
 	
 	// fprintf(stdout, "OMykiss >>>> selectLifeHistory >>>> Before add memory\n");
 	// fflush(0);
@@ -692,9 +697,9 @@ Boston, MA 02111-1307, USA.
 		}
 	}
 
-			// fprintf(stdout, "OMykiss >>>> selectLifeHistory >>>> Memory list length is: %d\n", 
-			// [memoryList getCount]);
-			// fflush(0);
+	// fprintf(stdout, "OMykiss >>>> selectLifeHistory >>>> Memory list length is: %d\n", 
+	// [memoryList getCount]);
+	// fflush(0);
 	
 	// Juveniles do not make life history decisions until their age in days
 	// exceeds the parameter fishMemoryListLength
@@ -705,7 +710,8 @@ Boston, MA 02111-1307, USA.
 			[self printLHRptWithStartStage: [model getJuvenileLifestageSymbol]
 				endStage:  lifestageSymbol
 				memListLength: [memoryList getCount]
-				meanGrowth: -99.9
+				anadGrowth: -99.9
+				resGrowth: -99.9
 				meanSurvival: -99.9
 				resTimeHorizon: -99
 				anadFitness: -99.9
@@ -715,17 +721,7 @@ Boston, MA 02111-1307, USA.
 	}
 
 	// Now update means over memory
-	// First create the averagers if they doesn't exist.
-	// (Does not work to use one averager for both selectors)
-
-	theGrowthAverager = [model getMemoryGrowthAverager];
-	if(theGrowthAverager == nil)
-	{
-		theGrowthAverager = [Averager createBegin: [model getModelZone]]; 
-		[theGrowthAverager setCollection: memoryList];
-		[theGrowthAverager setProbedSelector: M(getGrowthValue)];
-		theGrowthAverager = [theGrowthAverager createEnd];
-	}
+	// First create the averager if it doesn't exist.
 
 	theSurvivalAverager = [model getMemorySurvivalAverager];
 	if(theSurvivalAverager == nil)
@@ -739,16 +735,16 @@ Boston, MA 02111-1307, USA.
 	// fprintf(stdout, "OMykiss >>>> selectLifeHistory >>>> Before Averager set collection\n");
 	// fflush(0);
 
-	// Update averagers and get means.
-	[theGrowthAverager setCollection: memoryList];
-	[theGrowthAverager update];
-	meanGrowth = [theGrowthAverager getAverage];
+	// Update averager and get means.
+	// Mean growth is calculated from newest, oldest length value
+	meanLengthGrowth = ([[memoryList getFirst] getLengthValue] - [[memoryList getLast] getLengthValue]) / ([memoryList getCount] - 1);
+	
 	[theSurvivalAverager setCollection: memoryList];
 	[theSurvivalAverager update];
 	meanSurvival = [theSurvivalAverager getAverage];
 
-	// fprintf(stdout, "OMykiss >>>> After update; Memory length: %d, meanGrowth: %f, meanSurvival: %f\n", 
-	// [memoryList getCount], meanGrowth, meanSurvival);
+	// fprintf(stdout, "OMykiss >>>> After update; Memory length: %d, meanLengthGrowth: %f, meanSurvival: %f\n", 
+	// [memoryList getCount], meanLengthGrowth, meanSurvival);
 
 	//
 	// Juvenile decides to become presmolt if its anadromy fitness
@@ -780,11 +776,32 @@ Boston, MA 02111-1307, USA.
 		
 	}
 	
-	anadromyFitness = [self anadromyFitnessWithGrowth: meanGrowth
+	// Estimate weight growth rate from length growth rate,
+	// assuming condition is 1.0 if length growth is positive.
+	// This depends on time horizon.
+	if(meanLengthGrowth == 0.0) 
+	{
+		anadromyGrowth = 0.0;
+		residenceGrowth = 0.0;
+	}
+	else
+	{
+		// First, anadromy
+		predictedLength = fishLength + (meanLengthGrowth * fishParams->fishSmoltDelay);
+		predictedWeight = fishParams->fishWeightParamA * (pow(predictedLength,fishParams->fishWeightParamB));
+		anadromyGrowth = (predictedWeight - fishWeight) / fishParams->fishSmoltDelay;
+		
+		// Now residency
+		predictedLength = fishLength + (meanLengthGrowth * residenceTimeHorizon);
+		predictedWeight = fishParams->fishWeightParamA * (pow(predictedLength,fishParams->fishWeightParamB));
+		residenceGrowth = (predictedWeight - fishWeight) / residenceTimeHorizon;
+	}
+	
+	anadromyFitness = [self anadromyFitnessWithGrowth: anadromyGrowth
 						andSurvival: meanSurvival
 						andTimeHorizon: fishParams->fishSmoltDelay];
 
-	residenceFitness = [self residenceFitnessWithGrowth: meanGrowth
+	residenceFitness = [self residenceFitnessWithGrowth: residenceGrowth
 						andSurvival: meanSurvival
 						andTimeHorizon: residenceTimeHorizon];
 	
@@ -796,7 +813,8 @@ Boston, MA 02111-1307, USA.
 			[self printLHRptWithStartStage: [model getJuvenileLifestageSymbol]
 				endStage:  lifestageSymbol
 				memListLength: [memoryList getCount]
-				meanGrowth: meanGrowth
+				anadGrowth: anadromyGrowth
+				resGrowth: residenceGrowth
 				meanSurvival: meanSurvival
 				resTimeHorizon: residenceTimeHorizon
 				anadFitness: anadromyFitness
@@ -819,7 +837,8 @@ Boston, MA 02111-1307, USA.
 		[self printLHRptWithStartStage: [model getJuvenileLifestageSymbol]
 			endStage:  lifestageSymbol
 			memListLength: [memoryList getCount]
-			meanGrowth: meanGrowth
+			anadGrowth: anadromyGrowth
+			resGrowth: residenceGrowth
 			meanSurvival: meanSurvival
 			resTimeHorizon: residenceTimeHorizon
 			anadFitness: anadromyFitness
@@ -1026,18 +1045,6 @@ Boston, MA 02111-1307, USA.
   }
 
   growthForCell = [self calcNetEnergyForCell: aCell] / (fishParams->fishEnergyDensity);
-  // weightAtTForCell = [self getWeightWithIntake: (T * netEnergyForCell) ]; 
-  // lengthAtTForCell = [self getLengthForNewWeight: weightAtTForCell];
-  // conditionAtTForCell = [self getConditionForWeight: weightAtTForCell andLength: lengthAtTForCell];
-
-  // fracMatureAtTForCell = [self getFracMatureForLength: lengthAtTForCell];
-
-  //
-  // The following variables: maxSwimSpeedForCell, feedTimeForCell, 
-  // depthLengthRatioForCell are set here because they depend on
-  // both cell and fish. They are then used by the
-  // survivalManager via fish get methods.
-  //
   maxSwimSpeedForCell = [self calcMaxSwimSpeedAt: aCell];
   feedTimeForCell = [self calcFeedTimeAt: aCell];
   depthLengthRatioForCell = [self calcDepthLengthRatioAt: aCell];
@@ -1061,26 +1068,6 @@ Boston, MA 02111-1307, USA.
   }
 
   [aCell updateFishSurvivalProbFor: self];
-
-  // if(fabs(fishCondition - conditionAtTForCell) < 0.001) 
-  // {
-      // starvSurvival = [aCell getStarvSurvivalFor: self];
-  // }
-  // else 
-  // {
-     // a = starvPa; 
-     // b = starvPb; 
-     // Kt = fishCondition;  //current fish condition
-     // KT = conditionAtTForCell;
-     // starvSurvival =  (1/a)*(log((1+exp(a*KT+b))/(1+exp(a*Kt+b))))/(KT-Kt); 
-  // }  
-
-  // if(isnan(starvSurvival) || isinf(starvSurvival))
-  // {
-     // fprintf(stderr, "ERROR: OMkiss >>>> presmoltFitnessAt >>>> starvSurvival = %f\n", starvSurvival);
-     // fflush(0);
-     // exit(1);
-  // }
 
   totalNonStarvSurv = [aCell getTotalKnownNonStarvSurvivalProbFor: self];
 
@@ -1120,13 +1107,7 @@ Boston, MA 02111-1307, USA.
 - (double) prespawnerFitnessAt: (FishCell *) aCell 
 { 
   double growthForCell;
-  // double nonStarvSurvivalForCell; 
   int T; // fitness horizon
-  // double conditionAtTForCell; 
-  // double fracMatureAtTForCell; 
-  // double T;                    //fishFitnessHorizon
-  // double Kt, KT, a, b;
-  // double starvSurvival;
   double prespawnerFitnessAtACell = 0.0;
   double totalNonStarvSurv = 0.0;
   
@@ -1177,18 +1158,7 @@ Boston, MA 02111-1307, USA.
   }
 
   growthForCell = [self calcNetEnergyForCell: aCell] / (fishParams->fishEnergyDensity);
-  // weightAtTForCell = [self getWeightWithIntake: (T * netEnergyForCell) ]; 
-  // lengthAtTForCell = [self getLengthForNewWeight: weightAtTForCell];
-  // conditionAtTForCell = [self getConditionForWeight: weightAtTForCell andLength: lengthAtTForCell];
 
-  // fracMatureAtTForCell = [self getFracMatureForLength: lengthAtTForCell];
-
-  //
-  // The following variables: maxSwimSpeedForCell, feedTimeForCell, 
-  // depthLengthRatioForCell are set here because they depend on
-  // both cell and fish. They are then used by the
-  // survivalManager via fish get methods.
-  //
   maxSwimSpeedForCell = [self calcMaxSwimSpeedAt: aCell];
   feedTimeForCell = [self calcFeedTimeAt: aCell];
   depthLengthRatioForCell = [self calcDepthLengthRatioAt: aCell];
@@ -1212,26 +1182,6 @@ Boston, MA 02111-1307, USA.
   }
 
   [aCell updateFishSurvivalProbFor: self];
-
-  // if(fabs(fishCondition - conditionAtTForCell) < 0.001) 
-  // {
-      // starvSurvival = [aCell getStarvSurvivalFor: self];
-  // }
-  // else 
-  // {
-     // a = starvPa; 
-     // b = starvPb; 
-     // Kt = fishCondition;  //current fish condition
-     // KT = conditionAtTForCell;
-     // starvSurvival =  (1/a)*(log((1+exp(a*KT+b))/(1+exp(a*Kt+b))))/(KT-Kt); 
-  // }  
-
-  // if(isnan(starvSurvival) || isinf(starvSurvival))
-  // {
-     // fprintf(stderr, "ERROR: OMkiss >>>> prespawnerFitnessAt >>>> starvSurvival = %f\n", starvSurvival);
-     // fflush(0);
-     // exit(1);
-  // }
 
   totalNonStarvSurv = [aCell getTotalKnownNonStarvSurvivalProbFor: self];
 
@@ -1271,7 +1221,8 @@ Boston, MA 02111-1307, USA.
 - printLHRptWithStartStage: (id <Symbol>) startLifestageSymbol
 	endStage:  (id <Symbol>) endLifestageSymbol
 	memListLength: (int) aMemoryLength
-	meanGrowth: (double) aGrowth
+	anadGrowth: (double) anAnadGrowth
+	resGrowth: (double) aResGrowth
 	meanSurvival: (double) aSurvival
 	resTimeHorizon: (int) aHorizon
 	anadFitness: (double) anAFitness
@@ -1291,7 +1242,7 @@ Boston, MA 02111-1307, USA.
        fileMetaData = [BreakoutReporter reportFileMetaData: scratchZone];
        fprintf(lifeHistoryRptPtr,"\n%s\n",fileMetaData);
        [scratchZone free: fileMetaData];
-      fprintf(lifeHistoryRptPtr,"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+      fprintf(lifeHistoryRptPtr,"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
 	  "Date",
 	   "FishID",
 	   "Species",
@@ -1302,7 +1253,8 @@ Boston, MA 02111-1307, USA.
 	   "SmoltTime(formatted)",
 	   "SmoltTime(unformatted)",
 	   "MemoryLength",
-	   "MeanGrowth",
+	   "AnadGrowth",
+	   "ResGrowth",
 	   "MeanSurvival",
 	   "Length",
 	   "Weight",
@@ -1321,7 +1273,7 @@ Boston, MA 02111-1307, USA.
 	}
   }
 
-  fprintf(lifeHistoryRptPtr,"%s,%d,%s,%s,%d,%s,%s,%s,%d,%d,%f,%f,%f,%f,%f,%f,%d,%f,%f\n",
+  fprintf(lifeHistoryRptPtr,"%s,%d,%s,%s,%d,%s,%s,%s,%d,%d,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f\n",
 		[timeManager getDateWithTimeT: [self getCurrentTimeT]],
 		   fishID,
 		   [species getName],
@@ -1332,7 +1284,8 @@ Boston, MA 02111-1307, USA.
 		   [timeManager getDateWithTimeT: smoltTime],
 		   (int) smoltTime,
 		   aMemoryLength,
-		   aGrowth,
+		   anAnadGrowth,
+		   aResGrowth,
 		   aSurvival,
 		   fishLength,
 		   fishWeight,
