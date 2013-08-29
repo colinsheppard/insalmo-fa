@@ -557,7 +557,7 @@ Boston, MA 02111-1307, USA.
   [velocityHisto setUpperBound: 200];
   [velocityHisto setCollection: [troutModelSwarm getReddList]];
   [velocityHisto setProbedSelector: M(getVelocity)];
-  [velocityHisto setFileOutput: YES];
+  [velocityHisto setFileOutput: NO];  // Turned off
   [velocityHisto setFileName: "ReddVelocityHisto.out"];
   velocityHisto = [velocityHisto createEnd];
   [velocityHisto enableDestroyNotification: self
@@ -573,7 +573,7 @@ Boston, MA 02111-1307, USA.
   [depthHisto setUpperBound: 200];
   [depthHisto setCollection: [troutModelSwarm getReddList]];
   [depthHisto setProbedSelector: M(getDepth)];
-  [depthHisto setFileOutput: YES];
+  [depthHisto setFileOutput: NO]; // Turned off
   [depthHisto setFileName: "ReddDepthHisto.out"];
   depthHisto = [depthHisto createEnd];
   [depthHisto enableDestroyNotification: self
