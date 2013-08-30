@@ -816,26 +816,35 @@ Boston, MA 02111-1307, USA.
 
   if(endTime  < startTime)
   {
-     endTimeStruct.tm_sec = defaultSecond;         /* seconds */
-     endTimeStruct.tm_min = defaultMinute;         /* minutes */
-     endTimeStruct.tm_hour = defaultHour;        /* hours */
-     endTimeStruct.tm_mday = endDateDay;
-     endTimeStruct.tm_mon = endDateMonth - 1;
-     endTimeStruct.tm_year = ((timeYear + 1) - 1900);
-     endTimeStruct.tm_wday = 0;
-     endTimeStruct.tm_yday = 0;
-     endTimeStruct.tm_isdst = defaultDST;       /* no daylight savings */
+	 // endTimeStruct.tm_sec = defaultSecond;         /* seconds */
+	 // endTimeStruct.tm_min = defaultMinute;         /* minutes */
+	 // endTimeStruct.tm_hour = defaultHour;        /* hours */
+	 // endTimeStruct.tm_mday = endDateDay;
+	 // endTimeStruct.tm_mon = endDateMonth - 1;
+	 // endTimeStruct.tm_year = ((timeYear + 1) - 1900);
+	 // endTimeStruct.tm_wday = 0;
+	 // endTimeStruct.tm_yday = 0;
+	 // endTimeStruct.tm_isdst = defaultDST;       /* no daylight savings */
  
-     endTime = mktime(&endTimeStruct);
+	 // endTime = mktime(&endTimeStruct);
 
 
-     endTime = endTime - timeZoneOffset;
-
+	 // endTime = endTime - timeZoneOffset;
+	if([self getJulianDayWithTimeT: aTime_t] >= [self getJulianDayWithTimeT: startTime])
+	  {
+		  timeIsBetween = YES;
+	  }
+	else if([self getJulianDayWithTimeT: aTime_t] <= [self getJulianDayWithTimeT: endTime])
+	  {
+		  timeIsBetween = YES;
+	  }
   }
-
-  if((startTime <= aTime_t) && (aTime_t <= endTime))
+  else
   {
-      timeIsBetween = YES;
+	  if((startTime <= aTime_t) && (aTime_t <= endTime))
+	  {
+		  timeIsBetween = YES;
+	  }
   }
 
   //fprintf(stderr, "TIMEMANAGER >>>> isTime:betweenMMDD:andMMDD >>>> startTime = %ld \n", (long) startTime);
