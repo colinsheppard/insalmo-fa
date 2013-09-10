@@ -849,12 +849,9 @@ Boston, MA 02111-1307, USA.
                   sscanf(tempString,"%s%lf", date, &inputData);
               }else{
                 char sInputData[15];
-                char * inputFormat = "%[0-9/] %*1[,] \
-                                      %[0-9.] %*1[,]";
-
-                    sscanf(tempString, inputFormat, date,
-                                                   sInputData);
-                    inputData = atof(sInputData);
+                char * inputFormat = "%s,%s";
+                sscanf(tempString, inputFormat, date,sInputData);
+                inputData = atof(sInputData);
               }
               anInputTime = (double) [timeManager getTimeTWithDate: date];
           }else if(inputDataType == HOURLY){
@@ -863,15 +860,10 @@ Boston, MA 02111-1307, USA.
               }else{
                 char sInputData[15];
                 char sHour[15]; 
-                char * inputFormat = "%[0-9/] %*1[,] \
-                                      %[0-9]  %*1[,] \
-                                      %[0-9.] %*1[,]";
-
-                    sscanf(tempString, inputFormat, date,
-                                                    sHour,
-                                                    sInputData);
-                    hour = atoi(sHour);
-                    inputData = atof(sInputData);
+                char * inputFormat = "%s,%s,%s";
+                sscanf(tempString, inputFormat, date,sHour,sInputData);
+                hour = atoi(sHour);
+                inputData = atof(sInputData);
               }
               anInputTime = (double) [timeManager getTimeTWithDate: date
                                                           withHour: hour
@@ -886,23 +878,13 @@ Boston, MA 02111-1307, USA.
                 char sHour[15]; 
                 char sMinute[15]; 
                 char sSecond[15]; 
-                char * inputFormat = "%[0-9/] %*1[,] \
-                                      %[0-9]  %*1[,] \
-                                      %[0-9]  %*1[,] \
-                                      %[0-9]  %*1[,] \
-                                      %[0-9.] %*1[,]";
-
-                    sscanf(tempString, inputFormat, date,
-                                                    sHour,
-                                                    sMinute,
-                                                    sSecond,
-                                                    sInputData);
-                    hour = atoi(sHour);
-                    minute = atoi(sMinute);
-                    second = atoi(sSecond);
-                    inputData = atof(sInputData);
+                char * inputFormat = "%s,%s,%s,%s,%s";
+                sscanf(tempString, inputFormat, date,sHour,sMinute,sSecond,sInputData);
+                hour = atoi(sHour);
+                minute = atoi(sMinute);
+                second = atoi(sSecond);
+                inputData = atof(sInputData);
               }
-
               anInputTime = (double) [timeManager getTimeTWithDate: date
                                                           withHour: hour
                                                         withMinute: minute
@@ -929,17 +911,15 @@ Boston, MA 02111-1307, USA.
           while(fgets(tempString, 200, inputFP) != NULL){
                   lineNumber++;
 
+
                   if(inputDataType == DAILY){
                       if(CSV == NO){
                           sscanf(tempString,"%s%lf", date, &inputData);
                       }else{
                         char sInputData[15];
-                        char * inputFormat = "%[0-9/] %*1[,] \
-                                              %[0-9.] %*1[,]";
-
-                            sscanf(tempString, inputFormat, date,
-                                                           sInputData);
-                            inputData = atof(sInputData);
+                        char * inputFormat = "%s,%s";
+                        sscanf(tempString, inputFormat, date,sInputData);
+                        inputData = atof(sInputData);
                       }
                       anInputTime = (double) [timeManager getTimeTWithDate: date];
                   }else if(inputDataType == HOURLY){
@@ -948,15 +928,11 @@ Boston, MA 02111-1307, USA.
                         }else{
                           char sInputData[15];
                           char sHour[15]; 
-                          char * inputFormat = "%[0-9/] %*1[,] \
-                                                %[0-9]  %*1[,] \
-                                                %[0-9.] %*1[,]";
+                          char * inputFormat = "%s,%s,%s";
 
-                              sscanf(tempString, inputFormat, date,
-                                                              sHour,
-                                                              sInputData);
-                              hour = atoi(sHour);
-                              inputData = atof(sInputData);
+                          sscanf(tempString, inputFormat, date,sHour,sInputData);
+                          hour = atoi(sHour);
+                          inputData = atof(sInputData);
                         }
                         anInputTime = (double) [timeManager getTimeTWithDate: date
                                                                     withHour: hour
@@ -971,17 +947,9 @@ Boston, MA 02111-1307, USA.
                          char sHour[15]; 
                          char sMinute[15]; 
                          char sSecond[15]; 
-                         char * inputFormat = "%[0-9/] %*1[,] \
-                                               %[0-9]  %*1[,] \
-                                               %[0-9]  %*1[,] \
-                                               %[0-9]  %*1[,] \
-                                               %[0-9.] %*1[,]";
+                         char * inputFormat = "%s,%s,%s,%s,%s";
 
-                             sscanf(tempString, inputFormat, date,
-                                                             sHour,
-                                                             sMinute,
-                                                             sSecond,
-                                                             sInputData);
+                          sscanf(tempString, inputFormat, date,sHour,sMinute,sSecond,sInputData);
                              hour = atoi(sHour);
                              minute = atoi(sMinute);
                              second = atoi(sSecond);
