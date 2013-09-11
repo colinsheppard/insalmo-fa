@@ -1265,12 +1265,12 @@ Boston, MA 02111-1307, USA.
 	   "ResidentFitness");
   }
   if(lifeHistoryFirstTime == NO){
-	if((lifeHistoryRptPtr = fopen(lifeHistoryFileName,"a")) == NULL) 
-	{
-        fprintf(stderr, "ERROR: OMykiss >>>> printLHRptWithStartStage >>>> Cannot open report file %s for writing", lifeHistoryFileName);
-	    fflush(0);
-	    exit(1);
-	}
+    if((lifeHistoryRptPtr = fopen(lifeHistoryFileName,"a")) == NULL) 
+    {
+          fprintf(stderr, "ERROR: OMykiss >>>> printLHRptWithStartStage >>>> Cannot open report file %s for writing", lifeHistoryFileName);
+        fflush(0);
+        exit(1);
+    }
   }
 
   fprintf(lifeHistoryRptPtr,"%s,%d,%s,%s,%d,%s,%s,%s,%d,%d,%f,%f,%f,%f,%f,%f,%f,%d,%f,%f\n",
@@ -1281,8 +1281,8 @@ Boston, MA 02111-1307, USA.
 		   age,
 		   [startLifestageSymbol getName],
 		   [endLifestageSymbol getName],
-		   [timeManager getDateWithTimeT: smoltTime],
-		   (int) smoltTime,
+       (smoltTime == 0) ? "" : [timeManager getDateWithTimeT: smoltTime],
+		   (int)smoltTime,
 		   aMemoryLength,
 		   anAnadGrowth,
 		   aResGrowth,
@@ -1295,7 +1295,7 @@ Boston, MA 02111-1307, USA.
 		   anAFitness,
 		   aRFitness);
 
-  //fflush(lifeHistoryRptPtr);
+  fflush(lifeHistoryRptPtr);
   fclose(lifeHistoryRptPtr);
   lifeHistoryFirstTime = NO;
   return self;
