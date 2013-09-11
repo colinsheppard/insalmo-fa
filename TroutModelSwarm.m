@@ -196,8 +196,8 @@ char **speciesColor;
   reachSymbolList = [List create: modelZone];
 
   fishCounter = 0;
-  lftNumTotalOutmigrants = 0; // Cumulative total of all live outmigrants
-  lftNumBigOutmigrants = 0;   // Cumulative total of big live outmigrants
+  lftNumTotalOutmigrants = 0; // Cumulative total of all live outmigrants in smolt stage
+  lftNumBigOutmigrants = 0;   // Cumulative total of big live outmigrants in smolt stage
   lftBigOutmigrantsSizeThreshold = 5.0;  // "Big" outmigrants have length > this 
 
 
@@ -1943,18 +1943,16 @@ char **speciesColor;
    id <ListIndex> migrantNdx;
    id nextOutmigrant = nil;
 
-   numOutmigrants = [newOutmigrants getCount];
-   lftNumTotalOutmigrants += numOutmigrants;
-
    migrantNdx = [newOutmigrants listBegin: scratchZone];
 
-   while (([migrantNdx getLoc] != End) && ((nextOutmigrant = [migrantNdx next]) != nil)) 
-    {
-       if([nextOutmigrant getFishLength] > lftBigOutmigrantsSizeThreshold)
-       {
+   while (([migrantNdx getLoc] != End) && ((nextOutmigrant = [migrantNdx next]) != nil)) {
+	    if([nextOutmigrant getLifestageSymbol] == Smolt){
+        lftNumTotalOutmigrants++;
+        if([nextOutmigrant getFishLength] > lftBigOutmigrantsSizeThreshold){
           lftNumBigOutmigrants++;
-       }
-    }
+        }
+      }
+   }
 
    [migrantNdx drop];
 
