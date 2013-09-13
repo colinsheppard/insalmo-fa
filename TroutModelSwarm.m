@@ -224,7 +224,7 @@ char **speciesColor;
   [habitatManager setFishParamsMap: fishParamsMap];
   [habitatManager instantiateHabitatSpacesInZone: modelZone];
 
-  fprintf(stdout, "TroutModelSwarm >>>> instantiateObjects >>>> AFTER HabitatManager, lftBigOutmigrantsSizeThreshold=%f \n",lftBigOutmigrantsSizeThreshold);
+  fprintf(stdout, "TroutModelSwarm >>>> instantiateObjects >>>> AFTER HabitatManager \n");
   fflush(0);
 
   // New Sept. 2011 for Limiting Factors Tool
@@ -1944,6 +1944,8 @@ char **speciesColor;
    id nextOutmigrant = nil;
 
    migrantNdx = [newOutmigrants listBegin: scratchZone];
+   //fprintf(stdout, "ERROR: TroutModelSwarm >>>> updateNewOutmigrantsList >>>> lftBigOutmigrantsSizeThreshold = %f\n", lftBigOutmigrantsSizeThreshold);
+   //fflush(0);
 
    while (([migrantNdx getLoc] != End) && ((nextOutmigrant = [migrantNdx next]) != nil)) {
 	    if([nextOutmigrant getLifestageSymbol] == Smolt){
