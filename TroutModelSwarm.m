@@ -62,6 +62,7 @@ char **speciesColor;
   troutModelSwarm->numberOfSpecies=0;
   troutModelSwarm->timeManager = nil;
   troutModelSwarm->fishColorMap = nil;
+  troutModelSwarm->lftBigOutmigrantsSizeThreshold = 5.0;  // "Big" outmigrants have length > this 
 
   troutModelSwarm->printFishParams = NO;
   
@@ -198,7 +199,6 @@ char **speciesColor;
   fishCounter = 0;
   lftNumTotalOutmigrants = 0; // Cumulative total of all live outmigrants in smolt stage
   lftNumBigOutmigrants = 0;   // Cumulative total of big live outmigrants in smolt stage
-  lftBigOutmigrantsSizeThreshold = 5.0;  // "Big" outmigrants have length > this 
 
 
   fprintf(stdout, "TroutModelSwarm >>>> buildObjects >>> instantiateObjects >>>> BEFORE HabitatManager\n");
@@ -224,7 +224,7 @@ char **speciesColor;
   [habitatManager setFishParamsMap: fishParamsMap];
   [habitatManager instantiateHabitatSpacesInZone: modelZone];
 
-  fprintf(stdout, "TroutModelSwarm >>>> instantiateObjects >>>> AFTER HabitatManager\n");
+  fprintf(stdout, "TroutModelSwarm >>>> instantiateObjects >>>> AFTER HabitatManager, lftBigOutmigrantsSizeThreshold=%f \n",lftBigOutmigrantsSizeThreshold);
   fflush(0);
 
   // New Sept. 2011 for Limiting Factors Tool
