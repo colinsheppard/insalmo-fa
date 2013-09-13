@@ -1944,7 +1944,7 @@ char **speciesColor;
    id nextOutmigrant = nil;
 
    migrantNdx = [newOutmigrants listBegin: scratchZone];
-   //fprintf(stdout, "ERROR: TroutModelSwarm >>>> updateNewOutmigrantsList >>>> lftBigOutmigrantsSizeThreshold = %f\n", lftBigOutmigrantsSizeThreshold);
+   //fprintf(stdout, "TroutModelSwarm >>>> updateNewOutmigrantsList >>>> lftBigOutmigrantsSizeThreshold = %f\n", lftBigOutmigrantsSizeThreshold);
    //fflush(0);
 
    while (([migrantNdx getLoc] != End) && ((nextOutmigrant = [migrantNdx next]) != nil)) {
