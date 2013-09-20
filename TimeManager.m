@@ -200,12 +200,12 @@ Boston, MA 02111-1307, USA.
 
         aTimeT = aTimeT - timeZoneOffset;
 
-      /*
-        printf("aFormattedDate = %s \n", aFormattedDate);
-        printf("aTimeT = %d \n", (int) aTimeT);
-        printf("aDate = %s \n\n", [self getDateWithTimeT: aTimeT]);
-        fflush(stdout);
-      */
+      
+        //printf("aFormattedDate = %s \n", aFormattedDate);
+        //printf("aTimeT = %d \n", (int) aTimeT);
+        //printf("aDate = %s \n\n", [self getDateWithTimeT: aTimeT]);
+        //fflush(stdout);
+      
 
 
  if(aTimeT == -1 )  
@@ -288,10 +288,10 @@ Boston, MA 02111-1307, USA.
            aTimeT = aTimeT + 86400;
         }
 
-        //printf("aFormattedDate = %s \n", aFormattedDate);
-        //printf("aTimeT = %d \n", (int) aTimeT);
-        //printf("aDate = %s \n\n", [self getDateWithTimeT: aTimeT]);
-        //fflush(stdout);
+	//printf("aFormattedDate = %s \n", aFormattedDate);
+	//printf("aTimeT = %d \n", (int) aTimeT);
+	//printf("aDate = %s \n\n", [self getDateWithTimeT: aTimeT]);
+	//fflush(stdout);
 
 
 
