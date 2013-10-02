@@ -1942,6 +1942,8 @@ char **speciesColor;
 {
    id <ListIndex> migrantNdx;
    id nextOutmigrant = nil;
+   
+   numOutmigrants = [newOutmigrants getCount]; // for outmigrants graph
 
    migrantNdx = [newOutmigrants listBegin: scratchZone];
    //fprintf(stdout, "TroutModelSwarm >>>> updateNewOutmigrantsList >>>> lftBigOutmigrantsSizeThreshold = %f\n", lftBigOutmigrantsSizeThreshold);
