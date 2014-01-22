@@ -294,7 +294,6 @@ double lftBigOutmigrantsSizeThreshold; // Size defining "big" outmigrants
   id <Symbol> Smolt; // inSALMO-FA
   id <Symbol> Prespawn; // inSALMO-FA
   
-  id <Averager> memoryGrowthAverager; // inSALMO-FA
   id <Averager> memorySurvivalAverager; // inSALMO-FA
 
   id <List> sizeSymbolList;
@@ -405,8 +404,8 @@ double lftBigOutmigrantsSizeThreshold; // Size defining "big" outmigrants
 - (id <Symbol>) getSmoltLifestageSymbol;  // inSALMO-FA
 - (id <Symbol>) getPrespawnLifestageSymbol;  // inSALMO-FA
 
-- (id <Averager>) getMemoryGrowthAverager;   // inSALMO-FA
 - (id <Averager>) getMemorySurvivalAverager;   // inSALMO-FA
+- setMemorySurvivalAverager: (id <Averager>) anAverager;   // inSALMO-FA
 
 
 #if (DEBUG_LEVEL > 0)

@@ -66,7 +66,6 @@ char **speciesColor;
 
   troutModelSwarm->printFishParams = NO;
   
-  troutModelSwarm->memoryGrowthAverager = nil; // inSALMO-FA
   troutModelSwarm->memorySurvivalAverager = nil; // inSALMO-FA
 
   // Initialize optional output file controls
@@ -2705,17 +2704,6 @@ char **speciesColor;
 
 ///////////////////////////////////
 //
-// getMemoryGrowthAverager
-//
-// inSALMO-FA
-///////////////////////////////////
-- (id <Averager>) getMemoryGrowthAverager
-{
-   return memoryGrowthAverager;
-}
-
-///////////////////////////////////
-//
 // getMemorySurvivalAverager
 //
 // inSALMO-FA
@@ -2725,6 +2713,18 @@ char **speciesColor;
    return memorySurvivalAverager;
 }
 
+
+///////////////////////////////////
+//
+// setMemorySurvivalAverager
+//
+// inSALMO-FA
+///////////////////////////////////
+- setMemorySurvivalAverager: (id <Averager>) anAverager
+{
+   memorySurvivalAverager = anAverager;
+   return self;
+}
 
 
 ///////////////////////////////////////
@@ -3603,11 +3603,6 @@ char **speciesColor;
 
  //    [self outputModelZone: modelZone];
  
-     if(memoryGrowthAverager != nil){  // inSALMO-FA
-          [memoryGrowthAverager drop];
-          memoryGrowthAverager = nil;
-     }
-
      if(memorySurvivalAverager != nil){  // inSALMO-FA
           [memorySurvivalAverager drop];
           memorySurvivalAverager = nil;

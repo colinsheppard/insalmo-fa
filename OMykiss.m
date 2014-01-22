@@ -730,6 +730,7 @@ Boston, MA 02111-1307, USA.
 		[theSurvivalAverager setCollection: memoryList];
 		[theSurvivalAverager setProbedSelector: M(getSurvivalValue)];
 		theSurvivalAverager = [theSurvivalAverager createEnd];
+		[model setMemorySurvivalAverager: theSurvivalAverager];
 	}
 	
 	// fprintf(stdout, "OMykiss >>>> selectLifeHistory >>>> Before Averager set collection\n");

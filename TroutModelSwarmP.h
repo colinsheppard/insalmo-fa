@@ -81,8 +81,8 @@ Boston, MA 02111-1307, USA.
 - (id <Symbol>) getSmoltLifestageSymbol;  // inSALMO-FA
 - (id <Symbol>) getPrespawnLifestageSymbol;  // inSALMO-FA
 
-- (id <Averager>) getMemoryGrowthAverager;   // inSALMO-FA
 - (id <Averager>) getMemorySurvivalAverager;   // inSALMO-FA
+- setMemorySurvivalAverager: (id <Averager>) anAverager;   // inSALMO-FA
 
 - (id <Symbol>) getSizeSymbolForLength: (double) aLength;
 - (id <List>) getSizeSymbolList;
